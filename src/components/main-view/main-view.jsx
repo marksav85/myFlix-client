@@ -22,19 +22,17 @@ export const MainView = () => {
         console.log(data);
       });
   }, [token]);
-  
-        const moviesFromApi = data.map((movie) => {
-          return {
-            id: movie._id,
-            title: movie.Title,
-            description: movie.Description,
-            genre: movie.Genre.Name,
-            director: movie.Director.Name
-          };
-        });
-        setMovies(moviesFromApi);
-      });
-  }, []);
+
+  const moviesFromApi = data.map((movie) => {
+    return {
+      id: movie._id,
+      title: movie.Title,
+      description: movie.Description,
+      genre: movie.Genre.Name,
+      director: movie.Director.Name
+    };
+  });
+  setMovies(moviesFromApi);
 
   if (!user) {
     return (
@@ -70,6 +68,14 @@ export const MainView = () => {
           }}
         />
       ))}
+      <button
+        onClick={() => {
+          setUser(null);
+          setToken(null);
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 };
