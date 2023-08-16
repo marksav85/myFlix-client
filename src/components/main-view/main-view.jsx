@@ -4,10 +4,12 @@ import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 
 export const MainView = () => {
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedToken = localStorage.getItem("token");
+  const [user, setUser] = useState(storedUser? storedUser: null);
+  const [token, setToken] = useState(storedToken? storedToken: null);
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -72,6 +74,7 @@ export const MainView = () => {
         onClick={() => {
           setUser(null);
           setToken(null);
+          localStorage.clear();
         }}
       >
         Logout
