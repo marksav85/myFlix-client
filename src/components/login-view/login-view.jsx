@@ -7,21 +7,29 @@ export const LoginView = ({ onLoggeedIn }) => {
     event.preventDefault(); //prevents default refresh upon submit
 
     const data = {
-      access: username,
-      secret: password
+      Username: username,
+      Password: password
     };
   
     fetch('https://my-flix-films-d4434240379d.herokuapp.com/login', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(data)
-    }).then((response) => {
-      if (response.ok) {
-        onLoggedIn(username);
-      } else {
-        alert("Login failed");
-      }
-    });
-  };
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Login response: ", data);
+        if (data.user) {
+          onLoggeedIn(data.user, data.token);
+        } else {
+          alert("No such user");
+        }
+      })
+      .catch((error) => {
+        alert("Something went wrong");
+      });
 
   return (
     <form onSubmit={handleSubmit}>
