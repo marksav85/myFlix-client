@@ -13187,8 +13187,8 @@ textarea.form-control-lg {
 }
 
 img {
-  max-width: 20%;
-  height: auto;
+  max-width: 100%;
+  height: 100%;
 }
 
 /*# sourceMappingURL=index.5f1df611.css.map */
