@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { Row } from "react-bootstrap";
 import { Col } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -72,6 +73,19 @@ export const MainView = () => {
               />
             </Col>
           ))}
+          <div className="text-center">
+            <Button
+              onClick={() => {
+                setUser(null);
+                setToken(null);
+              }}
+              style={{ cursor: "pointer" }}
+              variant="primary"
+              size="lg"
+            >
+              Logout
+            </Button>
+          </div>
         </>
       )}
     </Row>
