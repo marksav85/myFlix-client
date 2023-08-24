@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 export const SignupView = () => {
   const [username, setUsername] = useState("");
@@ -8,70 +10,73 @@ export const SignupView = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+
     const data = {
       Username: username,
       Password: password,
       Email: email,
-      Birthday: birthday
+      Birthday: birthday,
+    };
+
+    fetch("https://my-flix-films-d4434240379d.herokuapp.com/users", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      if (response.ok) {
+        alert("Sign up successful!");
+        window.location.reload();
+      } else {
+        alert("Sign up failed");
+      }
+    });
   };
 
-  fetch('https://my-flix-films-d4434240379d.herokuapp.com/users', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }).then((response) => {
-    if (response.ok) {
-      alert('Sign up successful!');
-      window.location.reload();
-    } else {
-      alert('Sign up failed');
-    }
-  });
-};
-
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Username:
-        <input
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="signUpFormUsername">
+        <Form.Label>Username:</Form.Label>
+        <Form.Control
           type="text"
           value={username}
-          onChange={(e) => setUsername(e.target.value)} 
+          onChange={(e) => setUsername(e.target.value)}
           required
           minLength="3"
         />
-      </label>
-      <label>
-        Password:
-        <input 
+      </Form.Group>
+
+      <Form.Group controlId="signUpFormPassword">
+        <Form.Label>Password:</Form.Label>
+        <Form.Control
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-      </label>
-      <label>
-        Email:
-        <input
+      </Form.Group>
+      <Form.Group controlId="signUpFormEmail">
+        <Form.Label>Email:</Form.Label>
+        <Form.Control
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)} 
-          required 
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
-      </label>
-      <label>
-        Birthday:
-        <input
+      </Form.Group>
+      <Form.Group controlId="signUpFormBirthday">
+        <Form.Label>Birthday:</Form.Label>
+        <Form.Control
           type="date"
           value={birthday}
-          onChange={(e) => setBirthday(e.target.value)} 
-          required 
+          onChange={(e) => setBirthday(e.target.value)}
+          required
         />
-      </label>
-      <button type="submit">Submit</button>
-    </form>
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Submit
+      </Button>
+    </Form>
   );
 };
