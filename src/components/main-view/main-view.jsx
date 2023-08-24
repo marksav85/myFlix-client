@@ -62,7 +62,7 @@ export const MainView = () => {
             path="/login"
             element={
               <>
-                {!user ? (
+                {user ? (
                   <Navigate to="/" />
                 ) : (
                   <Col md={5}>
@@ -105,7 +105,7 @@ export const MainView = () => {
                   <>
                     {movies.map((movie) => (
                       <Col className="mb-5" key={movie.id} md={3}>
-                        <MovieCard movies={movie} />
+                        <MovieCard movie={movie} />
                       </Col>
                     ))}
                     {/* <div className="text-center">
