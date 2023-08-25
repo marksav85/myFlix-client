@@ -18,7 +18,7 @@ export const MovieView = ({ movies, user, setUser, token }) => {
 
   const removeFavorite = () => {
     fetch(
-      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}/${movieId}`,
+      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
       {
         method: "DELETE",
         headers: {
@@ -43,9 +43,9 @@ export const MovieView = ({ movies, user, setUser, token }) => {
 
   const addToFavorite = () => {
     fetch(
-      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}/${movieId}`,
+      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
       {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
