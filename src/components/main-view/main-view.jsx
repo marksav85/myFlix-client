@@ -4,9 +4,10 @@ import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
+import { ProfileView } from "../profile-view/profile-view";
 import { Row } from "react-bootstrap";
 import { Col } from "react-bootstrap";
-import { Button } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 export const MainView = () => {
@@ -15,7 +16,7 @@ export const MainView = () => {
   const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken ? storedToken : null);
   const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     if (!token) return;
@@ -67,6 +68,7 @@ export const MainView = () => {
               </>
             }
           />
+
           <Route
             path="/login"
             element={
@@ -86,6 +88,32 @@ export const MainView = () => {
               </>
             }
           />
+
+          <Route
+            path="/profile"
+            element={
+              <>
+                {!user ? (
+                  <Navigate to="/login" replace />
+                ) : (
+                  <Col>
+                    <ProfileView
+                      user={user}
+                      token={token}
+                      setUser={setUser}
+                      movies={movies}
+                      onLoggedOut={() => {
+                        setUser(null);
+                        setToken(null);
+                        localStorage.clear();
+                      }}
+                    />
+                  </Col>
+                )}
+              </>
+            }
+          />
+
           <Route
             path="/movies/:movieId"
             element={
@@ -102,34 +130,38 @@ export const MainView = () => {
               </>
             }
           />
+
           <Route
             path="/"
             element={
               <>
                 {!user ? (
                   <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
                 ) : (
                   <>
-                    {movies.map((movie) => (
-                      <Col className="mb-5" key={movie.id} md={3}>
-                        <MovieCard movie={movie} />
-                      </Col>
-                    ))}
-                    {/* <div className="text-center">
-                <Button
-                  onClick={() => {
-                    setUser(null);
-                    setToken(null);
-                  }}
-                  style={{ cursor: "pointer" }}
-                  variant="primary"
-                  size="lg"
-                >
-                  Logout
-                </Button>
-              </div> */}
+                    <Row className="mt-1 mb-1">
+                      <Form.Control
+                        type="text"
+                        placeholder="Search..."
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                      />
+                    </Row>
+                    {movies.length === 0 ? (
+                      <Col>This list is empty!</Col>
+                    ) : (
+                      movies
+                        .filter((movie) =>
+                          movie.title
+                            .toLowerCase()
+                            .includes(filter.toLowerCase())
+                        )
+                        .map((movie) => (
+                          <Col className="mb-5" key={movie.id} md={4}>
+                            <MovieCard movie={movie} />
+                          </Col>
+                        ))
+                    )}
                   </>
                 )}
               </>
