@@ -6,8 +6,10 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Modal from "react-bootstrap/Modal";
-import { MovieCard } from "../movie-card/movie-card";
-import { ModalHeader } from "react-bootstrap";
+import UserInfo from "./user-info";
+import FavoriteMovies from "./favorite-movies";
+import UpdateUser from "./update-user";
+import { Link } from "react-router-dom";
 
 export const ProfileView = ({ user, token, setUser, movies }) => {
   const [username, setUsername] = useState(user.Username);
@@ -15,8 +17,9 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
   const [email, setEmail] = useState(user.Email);
   const [birthday, setBirthday] = useState(user.BirthDate);
   const [showModal, setShowModal] = useState(false);
-  let favoriteMovies = movies.filter((m) =>
-    user.FavoriteMovies.includes(m._id)
+
+  const favoriteMovies = movies.filter((movie) =>
+    user.FavoriteMovies.includes(movie.id)
   );
 
   const handleShowModal = () => setShowModal(true);
@@ -83,64 +86,16 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
       <Row>
         <Col>
           <h3>Your profile details</h3>
-          <div>Username: {user.Username}</div>
-          <div>Email: {user.Email}</div>
+          <UserInfo name={user.Username} email={user.Email} />
+          <FavoriteMovies favoriteMovies={favoriteMovies} />
+          <UpdateUser
+            handleSubmit={handleSubmit}
+            setUsername={setUsername}
+            setPassword={setPassword}
+            setEmail={setEmail}
+            setBirthday={setBirthday}
+          />
         </Col>
-        <Col>
-          <h3>Update your profile information here:</h3>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formUsername">
-              <Form.Label>Username:</Form.Label>
-              <Form.Control
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                minLength="3"
-              />
-            </Form.Group>
-            <Form.Group controlId="formPassword">
-              <Form.Label>Password:</Form.Label>
-              <Form.Control
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength="3"
-              />
-            </Form.Group>
-            <Form.Group controlId="formEmail">
-              <Form.Label>Email:</Form.Label>
-              <Form.Control
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="formBirthday">
-              <Form.Label>Birthday:</Form.Label>
-              <Form.Control
-                type="date"
-                value={birthday}
-                onChange={(e) => setBirthday(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Save changes
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-
-      <Row>
-        <h3>Favorite movies:</h3>
-        {favoriteMovies.map((movie) => (
-          <Col className="mb-5" key={movie.id} md={4}>
-            <MovieCard movie={movie}></MovieCard>
-          </Col>
-        ))}
       </Row>
 
       <Button variant="primary" onClick={handleShowModal}>
