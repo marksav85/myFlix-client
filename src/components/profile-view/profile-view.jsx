@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import { useState, useEffect } from "react";
-import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import { Form, Button, Row, Col, Container, Card } from "react";
 import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
 import UserInfo from "./user-info";
 import FavoriteMovies from "./favorite-movies";
@@ -81,22 +82,65 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
   };
 
   return (
-    <>
-      <h1>Profile</h1>
+    <Container>
       <Row>
-        <Col>
-          <h3>Your profile details</h3>
-          <UserInfo name={user.Username} email={user.Email} />
-          <FavoriteMovies favoriteMovies={favoriteMovies} />
-          <UpdateUser
-            handleSubmit={handleSubmit}
-            setUsername={setUsername}
-            setPassword={setPassword}
-            setEmail={setEmail}
-            setBirthday={setBirthday}
-          />
+        <Col xs={12} sm={6}>
+          <Card>
+            <Card.Body>
+              <UserInfo name={user.Username} email={user.Email} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xs={12} sm={6}>
+          <Card>
+            <Card.Body>
+              <UpdateUser
+                handleSubmit={handleSubmit}
+                setUsername={setUsername}
+                setPassword={setPassword}
+                setEmail={setEmail}
+                setBirthday={setBirthday}
+              />
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
+
+      <FavoriteMovies favoriteMovies={favoriteMovies} />
+    </Container>
+  );
+};
+
+{
+  /* /* return (
+  <Container>
+      <Row>
+        <Col xs={12} sm={4}>
+          <Card>
+            <Card.Body>
+              <h3>Your profile details</h3>
+              <UserInfo name={user.Username} email={user.Email} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xs={12} sm={4}>
+          <Card>
+            <Card.Body>
+              <h3>Your profile details</h3>
+              <UpdateUser
+                handleSubmit={handleSubmit}
+                setUsername={setUsername}
+                setPassword={setPassword}
+                setEmail={setEmail}
+                setBirthday={setBirthday}
+              />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Col xs={12} sm={4}>
+        <FavoriteMovies favoriteMovies={favoriteMovies} />
+      </Col>
 
       <Button variant="primary" onClick={handleShowModal}>
         Delete account
@@ -115,6 +159,6 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
-  );
-};
+    </Container>
+  ); */
+}
