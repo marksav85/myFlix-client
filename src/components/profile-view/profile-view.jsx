@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { useState, useEffect } from "react";
-import { Form } from "react";
+import { useState } from "react";
 import { Button } from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -11,7 +10,6 @@ import Modal from "react-bootstrap/Modal";
 import UserInfo from "./user-info";
 import FavoriteMovies from "./favorite-movies";
 import UpdateUser from "./update-user";
-import { Link } from "react-router-dom";
 import "./profile-view.scss";
 
 export const ProfileView = ({ user, token, setUser, movies }) => {

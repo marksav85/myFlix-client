@@ -1,6 +1,5 @@
 import React from "react";
-import { Row, Form, Button } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { Form, Button } from "react-bootstrap";
 
 function UpdateUser({
   handleSubmit,
