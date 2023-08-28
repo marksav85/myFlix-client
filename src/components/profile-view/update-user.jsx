@@ -1,5 +1,6 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
+import "./profile-view.scss";
 
 function UpdateUser({
   handleSubmit,
