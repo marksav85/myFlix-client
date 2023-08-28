@@ -58,6 +58,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
         if (data) {
           localStorage.setItem("user", JSON.stringify(data));
           setUser(data);
+          alert("Update successful.");
         }
       });
   };
@@ -75,6 +76,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
       if (response.ok) {
         setUser(null);
         localStorage.clear();
+        alert("Account deletion successful.");
       } else {
         alert("oops, something went wrong.");
       }
