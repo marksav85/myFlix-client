@@ -1,22 +1,32 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { Figure } from "react-bootstrap";
 
 function FavoriteMovies({ favoriteMovies }) {
   return (
     <>
-      <div>
-        <h3>Your Favorite Movies:</h3>
+      <Row>
+        <Col xs={12}>
+          <h4>Your Favorite Movies:</h4>
+        </Col>
+      </Row>
+
+      <Row>
         {favoriteMovies.map((movie) => {
           return (
-            <div key={movie.id}>
-              <img src={movie.image} />
-              <Link to={`/movies/${movie.id}`}>
-                <h4>{movie.title}</h4>
-              </Link>
-            </div>
+            <Col xs={12} md={6} lg={3} key={movie.id} className="fav-movie">
+              <Figure>
+                <Link to={`/movies/${movie.id}`}>
+                  <Figure.Image src={movie.image} alt={movie.title} />
+                  <Figure.Caption>{movie.title}</Figure.Caption>
+                </Link>
+              </Figure>
+            </Col>
           );
         })}
-      </div>
+      </Row>
     </>
   );
 }
