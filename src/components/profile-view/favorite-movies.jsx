@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 function FavoriteMovies({ favoriteMovies }) {
   return (
     <>
-      <div className="mb-3">
-        <h3>Favorite movies:</h3>
+      <div>
+        <h3>Your Favorite Movies:</h3>
         {favoriteMovies.map((movie) => {
           return (
             <div key={movie.id}>
