@@ -5,8 +5,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin: auto;
+    width: 100%;
+
     img {
+      display: block;
       height: 400px;
+      margin: auto;
     }
+    figcaption {
+      text-align: center;
   }
+}
 }
