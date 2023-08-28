@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import { useState, useEffect } from "react";
-import { Form, Button } from "react";
+import { Form } from "react";
+import { Button } from "react-bootstrap";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -106,42 +107,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
           </Card>
         </Col>
       </Row>
-
       <FavoriteMovies favoriteMovies={favoriteMovies} />
-    </Container>
-  );
-};
-
-{
-  /* /* return (
-  <Container>
-      <Row>
-        <Col xs={12} sm={4}>
-          <Card>
-            <Card.Body>
-              <h3>Your profile details</h3>
-              <UserInfo name={user.Username} email={user.Email} />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col xs={12} sm={4}>
-          <Card>
-            <Card.Body>
-              <h3>Your profile details</h3>
-              <UpdateUser
-                handleSubmit={handleSubmit}
-                setUsername={setUsername}
-                setPassword={setPassword}
-                setEmail={setEmail}
-                setBirthday={setBirthday}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Col xs={12} sm={4}>
-        <FavoriteMovies favoriteMovies={favoriteMovies} />
-      </Col>
 
       <Button variant="primary" onClick={handleShowModal}>
         Delete account
@@ -161,5 +127,5 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
         </Modal.Footer>
       </Modal>
     </Container>
-  ); */
-}
+  );
+};
