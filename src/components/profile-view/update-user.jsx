@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { Form, Button } from "react-bootstrap";
 import "./profile-view.scss";
