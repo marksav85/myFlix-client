@@ -1,0 +1,24 @@
+.fav-movie {
+  margin-bottom: 15px;
+  figure {
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: auto;
+    width: 100%;
+
+    img {
+      display: block;
+      height: 400px;
+      margin: auto;
+    }
+    figcaption {
+      text-align: center;
+  }
+}
+}
+
+.btn {
+  margin: 15px 0 15px 0;
+}

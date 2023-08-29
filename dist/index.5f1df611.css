@@ -3,7 +3,49 @@
   background-color: #1e90ff;
   border: none;
   border-radius: 4px;
+  margin-top: 15px;
   padding: 4px 12px;
+}
+
+.mov-img {
+  height: 750px;
+  margin: auto;
+  display: block;
+}
+
+.nav-head {
+  background-color: #0f40a9;
+}
+
+.nav-head h1, .nav-head h6 {
+  color: #ffaa09;
+}
+
+.fav-movie {
+  margin-bottom: 15px;
+}
+
+.fav-movie figure {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.fav-movie figure img {
+  height: 400px;
+  margin: auto;
+  display: block;
+}
+
+.fav-movie figure figcaption {
+  text-align: center;
+}
+
+.btn {
+  margin: 15px 0;
 }
 
 :root, [data-bs-theme="light"] {
