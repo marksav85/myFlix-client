@@ -8,7 +8,6 @@
 }
 
 .mov-img {
-  display: block;
-  height: 750px;
-  margin: auto;
+  object-fit: cover;
+  aspect-ratio: 3/4;
 }
