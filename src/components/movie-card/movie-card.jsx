@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import PropTypes from "prop-types";
 import { Button, Card } from "react-bootstrap";
@@ -8,14 +9,26 @@ export const MovieCard = ({ movie }) => {
   return (
     <Card className="h-100">
       <Card.Img variant="top" className="card-img" src={movie.image} />
-      <Card.Body>
-        <Card.Title>{movie.title}</Card.Title>
-        <Card.Text>{movie.description}</Card.Text>
-        <Card.Text>{movie.genre}</Card.Text>
-        <Card.Text>{movie.director}</Card.Text>
-        <Link to={`/movies/${encodeURIComponent(movie.id)}`}>
-          <Button variant="link">Open</Button>
-        </Link>
+      <Card.Body
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <Card.Title>{movie.title}</Card.Title>
+          <Card.Text>{movie.description}</Card.Text>
+          <Card.Text>Genre: {movie.genre}</Card.Text>
+          <Card.Text>Director: {movie.director}</Card.Text>
+        </div>
+        <div className="text-center">
+          <Link to={`/movies/${encodeURIComponent(movie.id)}`}>
+            <Button variant="primary" size="md">
+              Open
+            </Button>
+          </Link>
+        </div>
       </Card.Body>
     </Card>
   );
