@@ -78,15 +78,24 @@ export const MovieView = ({ movies, user, setUser, token }) => {
         <Card.Text>{movie.director}</Card.Text>
       </Card.Body>
 
-      {isFavorite ? (
-        <Button onClick={removeFavorite}>Remove from favorites</Button>
-      ) : (
-        <Button onClick={addToFavorite}>Add to favorites</Button>
-      )}
-
-      <Link to={`/`}>
-        <button className="back-button">Back</button>
-      </Link>
+      <div className="text-center mb-2">
+        {isFavorite ? (
+          <Button variant="primary" size="lg" onClick={removeFavorite}>
+            Remove from favorites
+          </Button>
+        ) : (
+          <Button variant="primary" size="lg" onClick={addToFavorite}>
+            Add to favorites
+          </Button>
+        )}
+      </div>
+      <div className="text-center">
+        <Link to={`/`}>
+          <Button variant="secondary" size="sm">
+            Back
+          </Button>
+        </Link>
+      </div>
     </Card>
   );
 };
