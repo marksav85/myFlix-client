@@ -74,10 +74,11 @@ export const SignupView = () => {
         />
       </Form.Group>
 
-      <Form.Group controlId="signUpFormPassword">
+      <Form.Group controlId="signUpFormConfirmPassword">
         <Form.Label>Confirm Password:</Form.Label>
         <Form.Control
           type="password"
+          value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
