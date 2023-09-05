@@ -123,7 +123,7 @@ export const MainView = () => {
                 ) : movies.length === 0 ? (
                   <Col>The list is empty!</Col>
                 ) : (
-                  <Col md={8}>
+                  <Col md={6}>
                     <MovieView
                       movies={movies}
                       user={user}
