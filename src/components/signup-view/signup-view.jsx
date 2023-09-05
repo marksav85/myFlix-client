@@ -5,11 +5,28 @@ import Form from "react-bootstrap/Form";
 export const SignupView = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    function checkPasswordConfirmation(password, confirmPassword) {
+      if (password !== confirmPassword) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    if (checkPasswordConfirmation(password, confirmPassword)) {
+      // The passwords match, so submit the form
+    } else {
+      // The passwords do not match, so show an error message
+      alert("The passwords do not match. Please try again.");
+      window.location.reload();
+    }
 
     const data = {
       Username: username,
@@ -56,6 +73,16 @@ export const SignupView = () => {
           required
         />
       </Form.Group>
+
+      <Form.Group controlId="signUpFormPassword">
+        <Form.Label>Confirm Password:</Form.Label>
+        <Form.Control
+          type="password"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+      </Form.Group>
+
       <Form.Group controlId="signUpFormEmail">
         <Form.Label>Email:</Form.Label>
         <Form.Control
