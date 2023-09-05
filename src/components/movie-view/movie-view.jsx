@@ -74,8 +74,8 @@ export const MovieView = ({ movies, user, setUser, token }) => {
       <Card.Body>
         <Card.Title>{movie.title}</Card.Title>
         <Card.Text>{movie.description}</Card.Text>
-        <Card.Text>{movie.genre}</Card.Text>
-        <Card.Text>{movie.director}</Card.Text>
+        <Card.Text>Genre: {movie.genre}</Card.Text>
+        <Card.Text>Director: {movie.director}</Card.Text>
       </Card.Body>
 
       <div className="text-center mb-2">
