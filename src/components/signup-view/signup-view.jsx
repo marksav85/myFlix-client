@@ -109,11 +109,10 @@ export const SignupView = () => {
             required
           />
         </Form.Group>
-        <div>
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </div>
+
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
       </Form>
       <div>
         {success && (
