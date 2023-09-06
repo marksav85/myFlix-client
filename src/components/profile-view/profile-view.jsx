@@ -10,6 +10,8 @@ import Modal from "react-bootstrap/Modal";
 import UserInfo from "./user-info";
 import FavoriteMovies from "./favorite-movies";
 import UpdateUser from "./update-user";
+import Alert from "react-bootstrap/Alert";
+
 import "./profile-view.scss";
 
 export const ProfileView = ({ user, token, setUser, movies }) => {
@@ -18,6 +20,9 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
   const [email, setEmail] = useState(user.Email);
   const [birthday, setBirthday] = useState(user.BirthDate);
   const [showModal, setShowModal] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [fail, setFail] = useState(false);
+  const [show, setShow] = useState(true);
 
   const favoriteMovies = movies.filter((movie) =>
     user.FavoriteMovies.includes(movie.id)
@@ -51,14 +56,14 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
         if (response.ok) {
           return response.json();
         } else {
-          alert("Update failed.");
+          setFail(true);
         }
       })
       .then((data) => {
         if (data) {
           localStorage.setItem("user", JSON.stringify(data));
           setUser(data);
-          alert("Update successful.");
+          setSuccess(true);
         }
       });
   };
@@ -76,9 +81,6 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
       if (response.ok) {
         setUser(null);
         localStorage.clear();
-        alert("Account deletion successful.");
-      } else {
-        alert("oops, something went wrong.");
       }
     });
   };
@@ -105,6 +107,30 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
               />
             </Card.Body>
           </Card>
+          <div>
+            {success && (
+              <div>
+                <Alert
+                  variant="success"
+                  onClose={() => setShow(false)}
+                  dismissible
+                >
+                  Update successful.
+                </Alert>
+              </div>
+            )}
+            {fail && (
+              <div>
+                <Alert
+                  variant="warning"
+                  onClose={() => setShow(false)}
+                  dismissible
+                >
+                  Update unsuccessful.
+                </Alert>
+              </div>
+            )}
+          </div>
         </Col>
       </Row>
       <FavoriteMovies favoriteMovies={favoriteMovies} />
