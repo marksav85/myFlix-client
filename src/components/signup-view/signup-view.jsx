@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 
@@ -14,10 +13,8 @@ export const SignupView = () => {
   const [birthday, setBirthday] = useState("");
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
-  const [showButton, setShowButton] = useState(true);
-  const hideSubmitButton = () => {
-    setShowButton(!showButton);
-  };
+
+  const refresh = () => window.location.reload(true);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -112,14 +109,11 @@ export const SignupView = () => {
             required
           />
         </Form.Group>
-
-        <Col>
-          {showButton && (
-            <Button variant="primary" type="submit" onClick={hideSubmitButton}>
-              Submit
-            </Button>
-          )}
-        </Col>
+        <div>
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </div>
       </Form>
       <div>
         {success && (
@@ -137,9 +131,9 @@ export const SignupView = () => {
             <Alert variant="warning">
               Unsuccessful. Unable to create account. Please try again.
             </Alert>
-            <Link to={"/signup"}>
-              <Button variant="secondary">Close</Button>
-            </Link>
+            <Button variant="secondary" onClick={refresh}>
+              Close
+            </Button>
           </div>
         )}
       </div>
