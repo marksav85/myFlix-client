@@ -7,7 +7,7 @@ import "./movie-card.scss";
 
 export const MovieCard = ({ movie }) => {
   return (
-    <Card className="h-100">
+    <Card id="card" className="h-100">
       <Card.Img variant="top" className="card-img" src={movie.image} />
       <Card.Body
         style={{
@@ -24,7 +24,7 @@ export const MovieCard = ({ movie }) => {
         </div>
         <div className="text-center">
           <Link to={`/movies/${encodeURIComponent(movie.id)}`}>
-            <Button variant="primary" size="md">
+            <Button id="button" variant="primary" size="md">
               Open
             </Button>
           </Link>

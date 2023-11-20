@@ -15,8 +15,18 @@
     }
     figcaption {
       text-align: center;
+      color: #f8fffc;
+    }
   }
 }
+
+.modal-header {
+  background-color: #cb090b;
+}
+
+.modal-body {
+  color: #cb090b;
+  font-weight: 500;
 }
 
 .btn {

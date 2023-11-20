@@ -52,7 +52,7 @@ export const MainView = () => {
           localStorage.clear();
         }}
       />
-      <Row className="justify-content-md-center">
+      <Row className="justify-content-center">
         <Routes>
           <Route
             path="/signup"
@@ -123,7 +123,7 @@ export const MainView = () => {
                 ) : movies.length === 0 ? (
                   <Col>The list is empty!</Col>
                 ) : (
-                  <Col md={6}>
+                  <Col id="movie-view" md={6}>
                     <MovieView
                       movies={movies}
                       user={user}
@@ -144,7 +144,7 @@ export const MainView = () => {
                   <Navigate to="/login" replace />
                 ) : (
                   <>
-                    <Row className="mt-1 mb-1">
+                    <Row id="searchbar" className="mt-1 mb-1">
                       <Form.Control
                         type="text"
                         placeholder="Search..."
@@ -162,7 +162,12 @@ export const MainView = () => {
                             .includes(filter.toLowerCase())
                         )
                         .map((movie) => (
-                          <Col className="mb-5" key={movie.id} md={4}>
+                          <Col
+                            id="movie-card"
+                            className="mb-5"
+                            key={movie.id}
+                            md={4}
+                          >
                             <MovieCard movie={movie} />
                           </Col>
                         ))

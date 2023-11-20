@@ -2,3 +2,13 @@
   object-fit: cover;
   aspect-ratio: 3/4;
 }
+
+#movie-view {
+  margin-bottom: 20px;
+}
+
+.movie-view-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

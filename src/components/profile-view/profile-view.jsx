@@ -89,14 +89,14 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
     <Container>
       <Row>
         <Col xs={12} sm={6}>
-          <Card>
+          <Card id="user-info">
             <Card.Body>
               <UserInfo name={user.Username} email={user.Email} />
             </Card.Body>
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card>
+          <Card id="update-user">
             <Card.Body>
               <UpdateUser
                 handleSubmit={handleSubmit}
@@ -135,7 +135,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
       </Row>
       <FavoriteMovies favoriteMovies={favoriteMovies} />
 
-      <Button variant="primary" onClick={handleShowModal}>
+      <Button id="button" variant="primary" onClick={handleShowModal}>
         Delete account
       </Button>
       <Modal show={showModal} onHide={handleCloseModal}>
@@ -144,7 +144,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
         </Modal.Header>
         <Modal.Body>Are you sure?</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleDeleteUser}>
+          <Button id="button" onClick={handleDeleteUser}>
             Yes
           </Button>
           <Button variant="secondary" onClick={handleCloseModal}>

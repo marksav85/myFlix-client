@@ -63,7 +63,7 @@ function UpdateUser({
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        <Button id="button" variant="primary" type="submit">
           Save changes
         </Button>
       </Form>

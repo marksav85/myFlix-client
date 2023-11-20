@@ -8,7 +8,7 @@ import { Figure } from "react-bootstrap";
 function FavoriteMovies({ favoriteMovies }) {
   return (
     <>
-      <Row>
+      <Row id="favourite-movies">
         <Col xs={12}>
           <h4>Your Favorite Movies:</h4>
         </Col>

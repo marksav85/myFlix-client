@@ -1,7 +1,38 @@
-$color: steelblue;
+@import "~bootstrap/scss/bootstrap.scss";
 
-@import '~bootstrap/scss/bootstrap.scss';
+// CUSTOM COLOR SCHEMES
 
-.my-flix {
+$color: #f8fffc;
+$background: #18668b;
+$button: #cb090b;
+
+body {
+  background-color: $background;
   color: $color;
+}
+
+#user-info {
+  height: 100%;
+}
+
+#user-info h3 {
+  color: $button;
+}
+
+#user-info p {
+  font-weight: 500;
+}
+
+#update-user h3 {
+  color: $button;
+}
+
+#favourite-movies {
+  margin: 20px 0 10px 0;
+}
+
+#button {
+  background-color: $button;
+  border-color: $button;
+  margin: 5px;
 }
