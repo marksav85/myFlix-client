@@ -88,14 +88,14 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
   return (
     <Container>
       <Row>
-        <Col xs={12} sm={6}>
+        <Col xs={12} sm={6} className="user-containers">
           <Card id="user-info">
             <Card.Body>
               <UserInfo name={user.Username} email={user.Email} />
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
+        <Col xs={12} sm={6} className="user-containers">
           <Card id="update-user">
             <Card.Body>
               <UpdateUser
