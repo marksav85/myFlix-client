@@ -20,9 +20,8 @@ export const MainView = () => {
 
   useEffect(() => {
     if (!token) return;
-    // "https://my-flix-films-d4434240379d.herokuapp.com/movies"
 
-    fetch("https://myflix-movie-api.netlify.app/", {
+    fetch("https://my-flix-films-d4434240379d.herokuapp.com/movies", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
