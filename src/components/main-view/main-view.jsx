@@ -5,12 +5,9 @@ import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
-import { Row } from "react-bootstrap";
-import { Col } from "react-bootstrap";
-import Form from "react-bootstrap/Form";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-export const MainView = () => {
+const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedToken = localStorage.getItem("token");
   const [user, setUser] = useState(storedUser ? storedUser : null);
@@ -26,18 +23,14 @@ export const MainView = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-
-        const moviesFromApi = data.map((movie) => {
-          return {
-            id: movie._id,
-            title: movie.Title,
-            description: movie.Description,
-            genre: movie.Genre.Name,
-            director: movie.Director.Name,
-            image: movie.ImagePath,
-          };
-        });
+        const moviesFromApi = data.map((movie) => ({
+          id: movie._id,
+          title: movie.Title,
+          description: movie.Description,
+          genre: movie.Genre.Name,
+          director: movie.Director.Name,
+          image: movie.ImagePath,
+        }));
         setMovies(moviesFromApi);
       });
   }, [token]);
@@ -52,7 +45,7 @@ export const MainView = () => {
           localStorage.clear();
         }}
       />
-      <Row className="justify-content-center">
+      <div className="flex justify-center">
         <Routes>
           <Route
             path="/signup"
@@ -61,9 +54,9 @@ export const MainView = () => {
                 {user ? (
                   <Navigate to="/" />
                 ) : (
-                  <Col md={5}>
+                  <div className="w-full">
                     <SignupView />
-                  </Col>
+                  </div>
                 )}
               </>
             }
@@ -76,14 +69,14 @@ export const MainView = () => {
                 {user ? (
                   <Navigate to="/" />
                 ) : (
-                  <Col md={5}>
+                  <div className="w-full">
                     <LoginView
                       onLoggedIn={(user, token) => {
                         setUser(user);
                         setToken(token);
                       }}
                     />
-                  </Col>
+                  </div>
                 )}
               </>
             }
@@ -96,7 +89,7 @@ export const MainView = () => {
                 {!user ? (
                   <Navigate to="/login" replace />
                 ) : (
-                  <Col>
+                  <div>
                     <ProfileView
                       user={user}
                       token={token}
@@ -108,7 +101,7 @@ export const MainView = () => {
                         localStorage.clear();
                       }}
                     />
-                  </Col>
+                  </div>
                 )}
               </>
             }
@@ -121,16 +114,16 @@ export const MainView = () => {
                 {!user ? (
                   <Navigate to="/login" replace />
                 ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
+                  <div className="w-full">The list is empty!</div>
                 ) : (
-                  <Col id="movie-view" md={6}>
+                  <div className="w-full">
                     <MovieView
                       movies={movies}
                       user={user}
                       setUser={setUser}
                       token={token}
                     />
-                  </Col>
+                  </div>
                 )}
               </>
             }
@@ -143,42 +136,43 @@ export const MainView = () => {
                 {!user ? (
                   <Navigate to="/login" replace />
                 ) : (
-                  <>
-                    <Row id="searchbar" className="mt-1 mb-1">
-                      <Form.Control
+                  <div className="w-full">
+                    <div id="searchbar" className="mt-1 mb-1">
+                      <input
                         type="text"
                         placeholder="Search..."
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
                       />
-                    </Row>
+                    </div>
                     {movies.length === 0 ? (
-                      <Col>This list is empty!</Col>
+                      <div className="w-full">This list is empty!</div>
                     ) : (
-                      movies
-                        .filter((movie) =>
-                          movie.title
-                            .toLowerCase()
-                            .includes(filter.toLowerCase())
-                        )
-                        .map((movie) => (
-                          <Col
-                            id="movie-card"
-                            className="mb-5"
-                            key={movie.id}
-                            md={4}
-                          >
-                            <MovieCard movie={movie} />
-                          </Col>
-                        ))
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        {movies
+                          .filter((movie) =>
+                            movie.title
+                              .toLowerCase()
+                              .includes(filter.toLowerCase())
+                          )
+                          .map((movie) => (
+                            <div
+                              key={movie.id}
+                              className="bg-white shadow-md rounded-lg overflow-hidden"
+                            >
+                              <MovieCard movie={movie} />
+                            </div>
+                          ))}
+                      </div>
                     )}
-                  </>
+                  </div>
                 )}
               </>
             }
           />
         </Routes>
-      </Row>
+      </div>
     </BrowserRouter>
   );
 };
