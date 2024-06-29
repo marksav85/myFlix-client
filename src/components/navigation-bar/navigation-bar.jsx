@@ -1,44 +1,152 @@
-import React from "react";
-import { Navbar, Container, Nav } from "react-bootstrap";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./navigation-bar.scss";
 
 export const NavigationBar = ({ user, onLoggedOut }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <Navbar id="navbar">
-      <Container>
-        <Navbar.Brand as={Link} to="/">
-          <h1>MyFlix</h1>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-          <Nav>
+    <nav className="bg-gray-100 border-b-2 border-gray-200">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="relative flex items-center justify-between h-16">
+          {/* Left-aligned logo */}
+          <div className="flex items-center flex-shrink-0">
+            <Link to="/" className="text-xl font-bold text-gray-900">
+              MyFlix
+            </Link>
+          </div>
+          {/* Mobile menu button */}
+          <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 focus:text-gray-900"
+              aria-controls="mobile-menu"
+              aria-expanded={isMenuOpen ? "true" : "false"}
+              onClick={toggleMenu}
+            >
+              <span className="sr-only">Open main menu</span>
+              {/* Hamburger icon */}
+              <svg
+                className={`h-6 w-6 ${isMenuOpen ? "hidden" : "block"}`}
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                ></path>
+              </svg>
+              {/* Close icon */}
+              <svg
+                className={`h-6 w-6 ${isMenuOpen ? "block" : "hidden"}`}
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          {/* Right-aligned navigation links */}
+          <div className="hidden sm:flex sm:items-center sm:justify-end sm:space-x-4">
             {!user && (
               <>
-                <Nav.Link as={Link} to="/login">
-                  <h6>Login</h6>
-                </Nav.Link>
-                <Nav.Link as={Link} to="/signup">
-                  <h6>Signup</h6>
-                </Nav.Link>
+                <Link
+                  to="/login"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Signup
+                </Link>
               </>
             )}
             {user && (
               <>
-                <Nav.Link as={Link} to="/">
-                  <h6>Home</h6>
-                </Nav.Link>
-                <Nav.Link as={Link} to="/profile">
-                  <h6>My Profile</h6>
-                </Nav.Link>
-                <Nav.Link onClick={onLoggedOut}>
-                  <h6>Logout</h6>
-                </Nav.Link>
+                <Link
+                  to="/"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  My Profile
+                </Link>
+                <button
+                  onClick={onLoggedOut}
+                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Logout
+                </button>
               </>
             )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+          </div>
+        </div>
+      </div>
+      {/* Mobile menu, toggle with Tailwind's responsive utilities */}
+      <div
+        className={`${isMenuOpen ? "block" : "hidden"} sm:hidden bg-gray-100`}
+        id="mobile-menu"
+      >
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          {!user && (
+            <>
+              <Link
+                to="/login"
+                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Signup
+              </Link>
+            </>
+          )}
+          {user && (
+            <>
+              <Link
+                to="/"
+                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Home
+              </Link>
+              <Link
+                to="/profile"
+                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                My Profile
+              </Link>
+              <button
+                onClick={onLoggedOut}
+                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 };
