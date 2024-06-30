@@ -120,36 +120,38 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : (
-                <div className="w-full sm:w-9/10 lg:w-4/5 mx-auto flex flex-col items-center justify-center">
-                  <div id="searchbar" className="mt-1 mb-1 w-full">
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      value={filter}
-                      onChange={(e) => setFilter(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
-                  {movies.length === 0 ? (
-                    <div className="w-full">This list is empty!</div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
-                      {movies
-                        .filter((movie) =>
-                          movie.title
-                            .toLowerCase()
-                            .includes(filter.toLowerCase())
-                        )
-                        .map((movie) => (
-                          <div
-                            key={movie.id}
-                            className="bg-white shadow-md rounded-lg overflow-hidden"
-                          >
-                            <MovieCard movie={movie} />
-                          </div>
-                        ))}
+                <div className="flex items-center justify-center">
+                  <div className="w-full sm:w-9/10 lg:w-4/5 mx-auto flex flex-col items-center justify-center">
+                    <div id="searchbar" className="mt-1 mb-1 w-full">
+                      <input
+                        type="text"
+                        placeholder="Search..."
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                      />
                     </div>
-                  )}
+                    {movies.length === 0 ? (
+                      <div className="w-full">This list is empty!</div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
+                        {movies
+                          .filter((movie) =>
+                            movie.title
+                              .toLowerCase()
+                              .includes(filter.toLowerCase())
+                          )
+                          .map((movie) => (
+                            <div
+                              key={movie.id}
+                              className="bg-white shadow-md rounded-lg overflow-hidden"
+                            >
+                              <MovieCard movie={movie} />
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </>
