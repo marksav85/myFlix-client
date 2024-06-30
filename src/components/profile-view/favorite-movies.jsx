@@ -1,33 +1,25 @@
-/* eslint-disable react/prop-types */
 import React from "react";
 import { Link } from "react-router-dom";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import { Figure } from "react-bootstrap";
 
 function FavoriteMovies({ favoriteMovies }) {
   return (
     <>
-      <Row id="favourite-movies">
-        <Col xs={12}>
-          <h4>Your Favorite Movies:</h4>
-        </Col>
-      </Row>
+      <h4 className="text-lg font-bold mb-4">Your Favorite Movies:</h4>
 
-      <Row>
-        {favoriteMovies.map((movie) => {
-          return (
-            <Col xs={12} md={6} lg={3} key={movie.id} className="fav-movie">
-              <Figure>
-                <Link to={`/movies/${movie.id}`}>
-                  <Figure.Image src={movie.image} alt={movie.title} />
-                  <Figure.Caption>{movie.title}</Figure.Caption>
-                </Link>
-              </Figure>
-            </Col>
-          );
-        })}
-      </Row>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {favoriteMovies.map((movie) => (
+          <div key={movie.id} className="fav-movie">
+            <Link to={`/movies/${movie.id}`}>
+              <img
+                src={movie.image}
+                alt={movie.title}
+                className="w-full rounded-lg shadow-md hover:shadow-lg transition duration-300"
+              />
+              <p className="text-center mt-2">{movie.title}</p>
+            </Link>
+          </div>
+        ))}
+      </div>
     </>
   );
 }

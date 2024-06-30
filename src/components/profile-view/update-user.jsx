@@ -1,7 +1,4 @@
-/* eslint-disable react/prop-types */
 import React from "react";
-import { Form, Button } from "react-bootstrap";
-import "./profile-view.scss";
 
 function UpdateUser({
   handleSubmit,
@@ -15,59 +12,91 @@ function UpdateUser({
   setBirthday,
 }) {
   return (
-    <>
-      <h3>Update Your Details</h3>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="formUsername">
-          <Form.Label>Username:</Form.Label>
-          <Form.Control
+    <div>
+      <h3 className="text-lg font-bold mb-4">Update Your Details</h3>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Username:
+          </label>
+          <input
+            id="username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             minLength="3"
             placeholder="Enter Username"
           />
-        </Form.Group>
+        </div>
 
-        <Form.Group controlId="formPassword">
-          <Form.Label>Password:</Form.Label>
-          <Form.Control
+        <div className="mb-4">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password:
+          </label>
+          <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             minLength="3"
             placeholder="Enter Password"
           />
-        </Form.Group>
+        </div>
 
-        <Form.Group controlId="formEmail">
-          <Form.Label>Email:</Form.Label>
-          <Form.Control
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email:
+          </label>
+          <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
             placeholder="Enter Email"
           />
-        </Form.Group>
+        </div>
 
-        <Form.Group controlId="formBirthday">
-          <Form.Label>Birthday:</Form.Label>
-          <Form.Control
+        <div className="mb-4">
+          <label
+            htmlFor="birthday"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Birthday:
+          </label>
+          <input
+            id="birthday"
             type="date"
             value={birthday}
             onChange={(e) => setBirthday(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
           />
-        </Form.Group>
+        </div>
 
-        <Button id="button" variant="primary" type="submit">
+        <button
+          id="button"
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
           Save changes
-        </Button>
-      </Form>
-    </>
+        </button>
+      </form>
+    </div>
   );
 }
 
