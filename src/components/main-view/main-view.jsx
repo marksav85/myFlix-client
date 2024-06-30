@@ -120,8 +120,8 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : (
-                <div className="w-full">
-                  <div id="searchbar" className="mt-1 mb-1">
+                <div className="w-full sm:w-9/10 lg:w-4/5 mx-auto flex flex-col items-center justify-center">
+                  <div id="searchbar" className="mt-1 mb-1 w-full">
                     <input
                       type="text"
                       placeholder="Search..."
@@ -133,7 +133,7 @@ const MainView = () => {
                   {movies.length === 0 ? (
                     <div className="w-full">This list is empty!</div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
                       {movies
                         .filter((movie) =>
                           movie.title
