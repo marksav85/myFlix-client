@@ -10,7 +10,7 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
 
   return (
     <nav className="bg-gray-100 border-b-2 border-gray-200">
-      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2">
         <div className="relative flex items-center justify-between h-16">
           {/* Left-aligned logo */}
           <div className="flex items-center flex-shrink-0">

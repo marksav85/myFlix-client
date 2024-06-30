@@ -45,134 +45,117 @@ const MainView = () => {
           localStorage.clear();
         }}
       />
-      <div className="flex justify-center">
-        <Routes>
-          <Route
-            path="/signup"
-            element={
-              <>
-                {user ? (
-                  <Navigate to="/" />
-                ) : (
-                  <div className="w-full">
-                    <SignupView />
-                  </div>
-                )}
-              </>
-            }
-          />
 
-          <Route
-            path="/login"
-            element={
-              <>
-                {user ? (
-                  <Navigate to="/" />
-                ) : (
-                  <div className="w-full">
-                    <LoginView
-                      onLoggedIn={(user, token) => {
-                        setUser(user);
-                        setToken(token);
-                      }}
+      <Routes>
+        <Route
+          path="/signup"
+          element={<>{user ? <Navigate to="/" /> : <SignupView />}</>}
+        />
+
+        <Route
+          path="/login"
+          element={
+            <>
+              {user ? (
+                <Navigate to="/" />
+              ) : (
+                <LoginView
+                  onLoggedIn={(user, token) => {
+                    setUser(user);
+                    setToken(token);
+                  }}
+                />
+              )}
+            </>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <>
+              {!user ? (
+                <Navigate to="/login" replace />
+              ) : (
+                <ProfileView
+                  user={user}
+                  token={token}
+                  setUser={setUser}
+                  movies={movies}
+                  onLoggedOut={() => {
+                    setUser(null);
+                    setToken(null);
+                    localStorage.clear();
+                  }}
+                />
+              )}
+            </>
+          }
+        />
+
+        <Route
+          path="/movies/:movieId"
+          element={
+            <>
+              {!user ? (
+                <Navigate to="/login" replace />
+              ) : movies.length === 0 ? (
+                <div>The list is empty!</div>
+              ) : (
+                <MovieView
+                  movies={movies}
+                  user={user}
+                  setUser={setUser}
+                  token={token}
+                />
+              )}
+            </>
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            <>
+              {!user ? (
+                <Navigate to="/login" replace />
+              ) : (
+                <div className="w-full">
+                  <div id="searchbar" className="mt-1 mb-1">
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
-                )}
-              </>
-            }
-          />
-
-          <Route
-            path="/profile"
-            element={
-              <>
-                {!user ? (
-                  <Navigate to="/login" replace />
-                ) : (
-                  <div>
-                    <ProfileView
-                      user={user}
-                      token={token}
-                      setUser={setUser}
-                      movies={movies}
-                      onLoggedOut={() => {
-                        setUser(null);
-                        setToken(null);
-                        localStorage.clear();
-                      }}
-                    />
-                  </div>
-                )}
-              </>
-            }
-          />
-
-          <Route
-            path="/movies/:movieId"
-            element={
-              <>
-                {!user ? (
-                  <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <div className="w-full">The list is empty!</div>
-                ) : (
-                  <div className="w-full">
-                    <MovieView
-                      movies={movies}
-                      user={user}
-                      setUser={setUser}
-                      token={token}
-                    />
-                  </div>
-                )}
-              </>
-            }
-          />
-
-          <Route
-            path="/"
-            element={
-              <>
-                {!user ? (
-                  <Navigate to="/login" replace />
-                ) : (
-                  <div className="w-full">
-                    <div id="searchbar" className="mt-1 mb-1">
-                      <input
-                        type="text"
-                        placeholder="Search..."
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                      />
+                  {movies.length === 0 ? (
+                    <div className="w-full">This list is empty!</div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      {movies
+                        .filter((movie) =>
+                          movie.title
+                            .toLowerCase()
+                            .includes(filter.toLowerCase())
+                        )
+                        .map((movie) => (
+                          <div
+                            key={movie.id}
+                            className="bg-white shadow-md rounded-lg overflow-hidden"
+                          >
+                            <MovieCard movie={movie} />
+                          </div>
+                        ))}
                     </div>
-                    {movies.length === 0 ? (
-                      <div className="w-full">This list is empty!</div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        {movies
-                          .filter((movie) =>
-                            movie.title
-                              .toLowerCase()
-                              .includes(filter.toLowerCase())
-                          )
-                          .map((movie) => (
-                            <div
-                              key={movie.id}
-                              className="bg-white shadow-md rounded-lg overflow-hidden"
-                            >
-                              <MovieCard movie={movie} />
-                            </div>
-                          ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            }
-          />
-        </Routes>
-      </div>
+                  )}
+                </div>
+              )}
+            </>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 };

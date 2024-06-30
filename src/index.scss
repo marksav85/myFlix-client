@@ -1,41 +1,40 @@
-@import "~bootstrap/scss/bootstrap.scss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 // CUSTOM COLOR SCHEMES
 
-$color: #f8fffc;
-$background: #18668b;
-$button: #cb090b;
+// $color: #f8fffc;
+// $background: #18668b;
+// $button: #cb090b;
 
-body {
-  background-color: $background;
-  color: $color;
-}
+// body {
+//   background-color: $background;
+//   color: $color;
+// }
 
-#user-info {
-  height: 100%;
-}
+// #user-info {
+//   height: 100%;
+// }
 
-#user-info h3 {
-  color: $button;
-}
+// #user-info h3 {
+//   color: $button;
+// }
 
-#user-info p {
-  font-weight: 500;
-}
+// #user-info p {
+//   font-weight: 500;
+// }
 
-#update-user h3 {
-  color: $button;
-}
+// #update-user h3 {
+//   color: $button;
+// }
 
-#favourite-movies {
-  margin: 20px 0 10px 0;
-}
+// #favourite-movies {
+//   margin: 20px 0 10px 0;
+// }
 
-#button {
-  background-color: $button;
-  border-color: $button;
-  margin: 5px;
-}
+// #button {
+//   background-color: $button;
+//   border-color: $button;
+//   margin: 5px;
+// }

@@ -1,11 +1,6 @@
-/* eslint-disable react/prop-types */
-import React from "react";
-import { useState, useEffect } from "react";
-import { useParams } from "react-router";
-import { Link } from "react-router-dom";
-import Button from "react-bootstrap/Button";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import "./movie-view.scss";
-import { Card } from "react-bootstrap";
 
 export const MovieView = ({ movies, user, setUser, token }) => {
   const { movieId } = useParams();
@@ -69,41 +64,58 @@ export const MovieView = ({ movies, user, setUser, token }) => {
   const movie = movies.find((m) => m.id === movieId);
 
   return (
-    <Card id="movie-view" className="h-100">
-      <Card.Img variant="top" className="mov-img" src={movie.image} />
-      <Card.Body>
-        <Card.Title>{movie.title}</Card.Title>
-        <Card.Text>{movie.description}</Card.Text>
-        <Card.Text>Genre: {movie.genre}</Card.Text>
-        <Card.Text>Director: {movie.director}</Card.Text>
-        <div className="movie-view-buttons">
-          {isFavorite ? (
-            <Button
-              id="button"
-              variant="primary"
-              size="sm"
-              onClick={removeFavorite}
-            >
-              Remove from favorites
-            </Button>
-          ) : (
-            <Button
-              id="button"
-              variant="primary"
-              size="sm"
-              onClick={addToFavorite}
-            >
-              Add to favorites
-            </Button>
-          )}
-
-          <Link to={`/`}>
-            <Button variant="secondary" size="sm">
-              Back
-            </Button>
-          </Link>
+    <div className="flex items-center justify-center min-h-screen py-4">
+      <div className="flex flex-col lg:flex-row w-11/12 lg:w-4/5 bg-white shadow-md rounded-lg overflow-hidden">
+        {/* Left side image */}
+        <img
+          className="w-full lg:w-1/2 object-cover"
+          src={movie.image}
+          alt={movie.title}
+        />
+        {/* Right side content */}
+        <div className="flex flex-col justify-between w-full lg:w-1/2 p-6">
+          <div>
+            <div className="font-bold text-xl lg:text-2xl mb-2">
+              {movie.title}
+            </div>
+            <div className="mb-4">
+              <p className="text-gray-700 text-base lg:text-lg">
+                {movie.description}
+              </p>
+            </div>
+            <div className="mb-4">
+              <p className="text-gray-700 text-base lg:text-lg">
+                Genre: {movie.genre}
+              </p>
+              <p className="text-gray-700 text-base lg:text-lg">
+                Director: {movie.director}
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-between mt-4">
+            {isFavorite ? (
+              <button
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded text-sm lg:text-base"
+                onClick={removeFavorite}
+              >
+                Remove from favorites
+              </button>
+            ) : (
+              <button
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded text-sm lg:text-base"
+                onClick={addToFavorite}
+              >
+                Add to favorites
+              </button>
+            )}
+            <Link to={`/`} className="inline-block">
+              <button className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded text-sm lg:text-base">
+                Back
+              </button>
+            </Link>
+          </div>
         </div>
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 };
