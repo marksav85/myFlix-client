@@ -155,8 +155,9 @@ export const SignupView = () => {
         </div>
 
         <button
+          id="button"
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Submit
         </button>
@@ -170,9 +171,12 @@ export const SignupView = () => {
             className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
             role="alert"
           >
-            Sign up successful. Account created.
+            <p>Sign up successful. Account created.</p>
             <Link to={"/login"}>
-              <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2">
+              <button
+                id="button"
+                className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"
+              >
                 Login
               </button>
               {/* Link to login page with a button */}
@@ -185,10 +189,11 @@ export const SignupView = () => {
             className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
             role="alert"
           >
-            Unsuccessful. Unable to create account. Please try again.
+            <p>Unsuccessful. Unable to create account. Please try again.</p>
             <button
               onClick={refresh}
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"
+              id="button"
+              className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"
             >
               Close
             </button>
