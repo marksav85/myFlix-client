@@ -25,3 +25,14 @@ button {
 button:hover {
   @apply bg-customDark;
 }
+
+a:hover {
+  @apply text-white;
+}
+
+#navlink {
+  @apply text-red-400;
+  @apply font-bold;
+  @apply hover:text-white;
+  @apply cursor-pointer;
+}

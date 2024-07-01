@@ -18,16 +18,18 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               <h1 className="text-4xl text-red-400">MyFlix</h1>
             </Link>
           </div>
+
           {/* Mobile menu button */}
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 focus:text-gray-900"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 focus:text-gray-900"
               aria-controls="mobile-menu"
               aria-expanded={isMenuOpen ? "true" : "false"}
               onClick={toggleMenu}
             >
               <span className="sr-only">Open main menu</span>
+
               {/* Hamburger icon */}
               <svg
                 className={`h-6 w-6 ${isMenuOpen ? "hidden" : "block"}`}
@@ -42,6 +44,7 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
                   d="M4 6h16M4 12h16M4 18h16"
                 ></path>
               </svg>
+
               {/* Close icon */}
               <svg
                 className={`h-6 w-6 ${isMenuOpen ? "block" : "hidden"}`}
@@ -58,21 +61,24 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               </svg>
             </button>
           </div>
+
           {/* Right-aligned navigation links */}
           <div className="hidden sm:flex sm:items-center sm:justify-end sm:space-x-4">
             {!user && (
               <>
                 <Link
                   to="/login"
-                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  id="navlink"
                 >
-                  <h1>Login</h1>
+                  Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  id="navlink"
                 >
-                  <h1>Signup</h1>
+                  Signup
                 </Link>
               </>
             )}
@@ -80,22 +86,25 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               <>
                 <Link
                   to="/"
-                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  id="navlink"
                 >
-                  <h2 className="text-1xl">Home</h2>
+                  Home
                 </Link>
                 <Link
                   to="/profile"
-                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  id="navlink"
                 >
-                  <h2 className="text-1xl">My Profile</h2>
+                  My Profile
                 </Link>
-                <button
+                <a
                   onClick={onLoggedOut}
-                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  id="navlink"
                 >
-                  <h2 className="text-1xl">Logout</h2>
-                </button>
+                  Logout
+                </a>
               </>
             )}
           </div>
@@ -111,13 +120,15 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
             <>
               <Link
                 to="/login"
-                className="hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                className="block px-3 py-2 rounded-md text-base font-medium"
+                id="navlink"
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                className="block px-3 py-2 rounded-md text-base font-medium"
+                id="navlink"
               >
                 Signup
               </Link>
@@ -127,19 +138,22 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
             <>
               <Link
                 to="/"
-                className="hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="block px-3 py-2 rounded-md text-base font-medium"
+                id="navlink"
               >
                 Home
               </Link>
               <Link
                 to="/profile"
-                className="hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="block px-3 py-2 rounded-md text-base font-medium"
+                id="navlink"
               >
                 My Profile
               </Link>
               <button
                 onClick={onLoggedOut}
-                className="hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="block px-3 py-2 rounded-md text-base font-medium"
+                id="navlink"
               >
                 Logout
               </button>
