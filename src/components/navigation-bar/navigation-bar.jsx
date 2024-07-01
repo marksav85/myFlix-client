@@ -14,8 +14,8 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
         <div className="relative flex items-center justify-between h-16">
           {/* Left-aligned logo */}
           <div className="flex items-center flex-shrink-0">
-            <Link to="/" className="text-xl font-bold text-gray-900">
-              <h1 className="text-4xl">MyFlix</h1>
+            <Link to="/" className="text-xl font-bold">
+              <h1 className="text-4xl text-red-400">MyFlix</h1>
             </Link>
           </div>
           {/* Mobile menu button */}
@@ -64,13 +64,13 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               <>
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   <h1>Login</h1>
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   <h1>Signup</h1>
                 </Link>
@@ -80,19 +80,19 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               <>
                 <Link
                   to="/"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   <h2 className="text-1xl">Home</h2>
                 </Link>
                 <Link
                   to="/profile"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   <h2 className="text-1xl">My Profile</h2>
                 </Link>
                 <button
                   onClick={onLoggedOut}
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   <h2 className="text-1xl">Logout</h2>
                 </button>
@@ -111,13 +111,13 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
             <>
               <Link
                 to="/login"
-                className="text-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                className="hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="text-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                className="hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
                 Signup
               </Link>
@@ -127,19 +127,19 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
             <>
               <Link
                 to="/"
-                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
               >
                 Home
               </Link>
               <Link
                 to="/profile"
-                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
               >
                 My Profile
               </Link>
               <button
                 onClick={onLoggedOut}
-                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
               >
                 Logout
               </button>

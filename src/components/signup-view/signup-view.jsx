@@ -64,10 +64,7 @@ export const SignupView = () => {
       >
         {/* Form element */}
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="username"
-          >
+          <label className="block text-sm font-bold mb-2" htmlFor="username">
             Username:
           </label>
           {/* Username input field */}
@@ -78,15 +75,12 @@ export const SignupView = () => {
             onChange={(e) => setUsername(e.target.value)} // Update username state on change
             required
             minLength="5"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
-          >
+          <label className="block text-sm font-bold mb-2" htmlFor="password">
             Password:
           </label>
           {/* Password input field */}
@@ -96,13 +90,13 @@ export const SignupView = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)} // Update password state on change
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
 
         <div className="mb-4">
           <label
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-sm font-bold mb-2"
             htmlFor="confirmPassword"
           >
             Confirm Password:
@@ -114,15 +108,12 @@ export const SignupView = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)} // Update confirmPassword state on change
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email"
-          >
+          <label className="block text-sm font-bold mb-2" htmlFor="email">
             Email:
           </label>
           {/* Email input field */}
@@ -132,15 +123,12 @@ export const SignupView = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)} // Update email state on change
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="birthday"
-          >
+          <label className="block text-sm font-bold mb-2" htmlFor="birthday">
             Birthday:
           </label>
           {/* Birthday input field */}
@@ -150,7 +138,7 @@ export const SignupView = () => {
             value={birthday}
             onChange={(e) => setBirthday(e.target.value)} // Update birthday state on change
             required
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
 

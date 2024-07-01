@@ -181,7 +181,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
                 </svg>
               </button>
             </div>
-            <p className="text-gray-700 mb-4">Are you sure?</p>
+            <p className="mb-4">Are you sure?</p>
             <div className="flex justify-end">
               <button
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"

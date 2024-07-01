@@ -79,17 +79,11 @@ export const MovieView = ({ movies, user, setUser, token }) => {
               {movie.title}
             </div>
             <div className="mb-4">
-              <p className="text-gray-700 text-base lg:text-lg">
-                {movie.description}
-              </p>
+              <p className="text-base lg:text-lg">{movie.description}</p>
             </div>
             <div className="mb-4">
-              <p className="text-gray-700 text-base lg:text-lg">
-                Genre: {movie.genre}
-              </p>
-              <p className="text-gray-700 text-base lg:text-lg">
-                Director: {movie.director}
-              </p>
+              <p className="text-base lg:text-lg">Genre: {movie.genre}</p>
+              <p className="text-base lg:text-lg">Director: {movie.director}</p>
             </div>
           </div>
           <div className="flex justify-between mt-4">

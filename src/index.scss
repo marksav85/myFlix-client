@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 body {
-  background-color: #262932;
+  @apply bg-customDark;
+  @apply text-gray-700;
 }
 
 h1,
@@ -13,13 +14,14 @@ h4,
 h5,
 h6 {
   @apply font-bold;
-  color: #e4756e;
+  @apply text-red-400;
 }
 
-#button {
-  background-color: #e4756e;
+button {
+  @apply bg-red-400;
+  @apply text-white;
 }
 
-#button:hover {
-  background-color: #262932;
+button:hover {
+  @apply bg-customDark;
 }

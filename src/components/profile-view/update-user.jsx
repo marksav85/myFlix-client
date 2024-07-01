@@ -16,10 +16,7 @@ function UpdateUser({
       <h3 className="text-lg font-bold mb-4">Update Your Details</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label
-            htmlFor="username"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="username" className="block text-sm font-medium">
             Username:
           </label>
           <input
@@ -35,10 +32,7 @@ function UpdateUser({
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="password" className="block text-sm font-medium">
             Password:
           </label>
           <input
@@ -54,10 +48,7 @@ function UpdateUser({
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="email" className="block text-sm font-medium">
             Email:
           </label>
           <input
@@ -72,10 +63,7 @@ function UpdateUser({
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="birthday"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="birthday" className="block text-sm font-medium">
             Birthday:
           </label>
           <input
