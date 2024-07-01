@@ -23,7 +23,7 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 focus:text-gray-900"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-gray-200 focus:outline-none focus:bg-gray-200 focus:text-gray-900"
               aria-controls="mobile-menu"
               aria-expanded={isMenuOpen ? "true" : "false"}
               onClick={toggleMenu}
