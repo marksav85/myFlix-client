@@ -2,39 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-// CUSTOM COLOR SCHEMES
+body {
+  background-color: #262932;
+}
 
-// $color: #f8fffc;
-// $background: #18668b;
-// $button: #cb090b;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold;
+  color: #e4756e;
+}
 
-// body {
-//   background-color: $background;
-//   color: $color;
-// }
-
-// #user-info {
-//   height: 100%;
-// }
-
-// #user-info h3 {
-//   color: $button;
-// }
-
-// #user-info p {
-//   font-weight: 500;
-// }
-
-// #update-user h3 {
-//   color: $button;
-// }
-
-// #favourite-movies {
-//   margin: 20px 0 10px 0;
-// }
-
-// #button {
-//   background-color: $button;
-//   border-color: $button;
-//   margin: 5px;
-// }
+#button {
+  background-color: #e4756e;
+}

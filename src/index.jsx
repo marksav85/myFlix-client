@@ -5,7 +5,11 @@ import "./index.scss"; // Import statement to indicate that you need to bundle `
 
 // Main component (will eventually use all the others)
 const MyFlixApplication = () => {
-  return <MainView />;
+  return (
+    <div className="body-container">
+      <MainView />
+    </div>
+  );
 };
 
 // Finds the root of your app
