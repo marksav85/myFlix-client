@@ -9,13 +9,13 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
   };
 
   return (
-    <nav className="bg-gray-100 border-b-2 border-gray-200">
+    <nav>
       <div className="max-w-7xl mx-auto px-2">
         <div className="relative flex items-center justify-between h-16">
           {/* Left-aligned logo */}
           <div className="flex items-center flex-shrink-0">
             <Link to="/" className="text-xl font-bold text-gray-900">
-              MyFlix
+              <h1 className="text-4xl">MyFlix</h1>
             </Link>
           </div>
           {/* Mobile menu button */}
@@ -66,13 +66,13 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
                   to="/login"
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Login
+                  <h1>Login</h1>
                 </Link>
                 <Link
                   to="/signup"
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Signup
+                  <h1>Signup</h1>
                 </Link>
               </>
             )}
@@ -82,19 +82,19 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
                   to="/"
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Home
+                  <h2 className="text-1xl">Home</h2>
                 </Link>
                 <Link
                   to="/profile"
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  My Profile
+                  <h2 className="text-1xl">My Profile</h2>
                 </Link>
                 <button
                   onClick={onLoggedOut}
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Logout
+                  <h2 className="text-1xl">Logout</h2>
                 </button>
               </>
             )}
@@ -111,13 +111,13 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
             <>
               <Link
                 to="/login"
-                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="text-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="text-gray-700 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+                className="text-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
               >
                 Signup
               </Link>
