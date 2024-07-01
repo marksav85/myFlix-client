@@ -5,14 +5,15 @@ import FavoriteMovies from "./favorite-movies";
 import UpdateUser from "./update-user";
 
 export const ProfileView = ({ user, token, setUser, movies }) => {
+  // Form states
   const [username, setUsername] = useState(user.Username);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState(user.Email);
-  const [birthday, setBirthday] = useState(user.BirthDate);
+  const [birthday, setBirthday] = useState("user.BirthDate");
+  // Modal states
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
-  const [show, setShow] = useState(true);
 
   const favoriteMovies = movies.filter((movie) =>
     user.FavoriteMovies.includes(movie.id)
@@ -54,8 +55,16 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
           localStorage.setItem("user", JSON.stringify(data));
           setUser(data);
           setSuccess(true);
+          resetFormFields();
         }
       });
+  };
+
+  const resetFormFields = () => {
+    setUsername(user.Username);
+    setPassword("");
+    setEmail(user.Email);
+    setBirthday("");
   };
 
   const handleDeleteUser = () => {
@@ -91,6 +100,10 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
               setPassword={setPassword}
               setEmail={setEmail}
               setBirthday={setBirthday}
+              username={username}
+              password={password}
+              email={email}
+              birthday={birthday}
             />
           </div>
           <div>
@@ -103,7 +116,10 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
                   <span className="block sm:inline">Update successful.</span>
                   <span
                     className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                    onClick={() => setShow(false)}
+                    onClick={() => {
+                      setSuccess(false);
+                      resetFormFields();
+                    }}
                   >
                     <svg
                       className="fill-current h-6 w-6 text-green-500"
@@ -127,7 +143,7 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
                   <span className="block sm:inline">Update unsuccessful.</span>
                   <span
                     className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                    onClick={() => setShow(false)}
+                    onClick={() => setFail(false)}
                   >
                     <svg
                       className="fill-current h-6 w-6 text-yellow-500"
