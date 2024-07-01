@@ -5,6 +5,10 @@ export const LoginView = ({ onLoggedIn }) => {
   // State variables to manage the input values for username and password
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [fail, setFail] = useState(false);
+
+  // Function to refresh the page
+  const refresh = () => window.location.reload(true);
 
   // Handle form submission
   const handleSubmit = (event) => {
@@ -33,7 +37,7 @@ export const LoginView = ({ onLoggedIn }) => {
           localStorage.setItem("token", data.token);
           onLoggedIn(data.user, data.token); // Call the onLoggedIn callback with the user and token
         } else {
-          alert("No such user"); // Alert if the user does not exist
+          setFail(true); // Set fail state to true if response is not OK
         }
       })
       .catch((e) => {
@@ -87,14 +91,44 @@ export const LoginView = ({ onLoggedIn }) => {
           </div>
           <div className="flex items-center justify-between">
             <button
+              id="button"
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Submit
             </button>
             {/* Submit button */}
           </div>
         </form>
+
+        {/* Container for the alert message */}
+        <div className="mt-4 w-full max-w-md">
+          {/* Display failure message if fail state is true */}
+          {fail && (
+            <div
+              className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              <span className="block sm:inline">
+                Login unsuccessful. Please try again.
+              </span>
+              <span
+                className="absolute top-0 bottom-0 right-0 px-4 py-3"
+                onClick={() => refresh()}
+              >
+                <svg
+                  className="fill-current h-6 w-6 text-yellow-500"
+                  role="button"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <title>Close</title>
+                  <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
+                </svg>
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

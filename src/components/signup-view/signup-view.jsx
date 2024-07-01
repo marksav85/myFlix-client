@@ -189,15 +189,23 @@ export const SignupView = () => {
             className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
             role="alert"
           >
-            <p>Unsuccessful. Unable to create account. Please try again.</p>
-            <button
-              onClick={refresh}
-              id="button"
-              className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"
+            <span className="block sm:inline">
+              Login unsuccessful. Please try again.
+            </span>
+            <span
+              className="absolute top-0 bottom-0 right-0 px-4 py-3"
+              onClick={() => refresh()}
             >
-              Close
-            </button>
-            {/* Button to refresh the page */}
+              <svg
+                className="fill-current h-6 w-6 text-yellow-500"
+                role="button"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <title>Close</title>
+                <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
+              </svg>
+            </span>
           </div>
         )}
       </div>
