@@ -15,7 +15,7 @@ function FavoriteMovies({ favoriteMovies }) {
                 alt={movie.title}
                 className="w-full rounded-lg shadow-md hover:shadow-lg transition duration-300"
               />
-              <p className="text-center mt-2">{movie.title}</p>
+              <h1 className="text-center mt-2">{movie.title}</h1>
             </Link>
           </div>
         ))}

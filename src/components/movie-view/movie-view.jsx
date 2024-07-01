@@ -89,14 +89,14 @@ export const MovieView = ({ movies, user, setUser, token }) => {
           <div className="flex justify-between mt-4">
             {isFavorite ? (
               <button
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded text-sm lg:text-base"
+                className="px-4 py-2 font-bold rounded text-sm lg:text-base"
                 onClick={removeFavorite}
               >
                 Remove from favorites
               </button>
             ) : (
               <button
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded text-sm lg:text-base"
+                className="px-4 py-2 font-bold rounded text-sm lg:text-base"
                 onClick={addToFavorite}
               >
                 Add to favorites
