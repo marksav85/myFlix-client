@@ -6,14 +6,11 @@ export const LoginView = ({ onLoggedIn }) => {
   // State variables to manage the input values for username and password
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [fail, setFail] = useState(false);
+  const [fail, setFail] = useState(false); // State to track login failure
   const { baseUrl } = useAppContext();
 
-  // Function to refresh the page
-  const refresh = () => window.location.reload(true);
-
   // Handle form submission
-  const handleSubmit = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault(); // Prevents the default form submission behavior
 
     // Data object to be sent to the server
@@ -22,29 +19,36 @@ export const LoginView = ({ onLoggedIn }) => {
       Password: password,
     };
 
-    // Send a POST request to the login endpoint
-    fetch(`${baseUrl}/login`, {
-      method: "POST",
-      body: JSON.stringify(data), // Convert the data object to a JSON string
-      headers: {
-        "Content-Type": "application/json", // Specify the content type as JSON
-      },
-    })
-      .then((response) => response.json()) // Convert the response to JSON
-      .then((data) => {
-        console.log("Login response: ", data); // Log the response data
-        if (data.user) {
-          // If login is successful, store the user and token in localStorage
-          localStorage.setItem("user", JSON.stringify(data.user));
-          localStorage.setItem("token", data.token);
-          onLoggedIn(data.user, data.token); // Call the onLoggedIn callback with the user and token
-        } else {
-          setFail(true); // Set fail state to true if response is not OK
-        }
-      })
-      .catch((e) => {
-        alert("Something went wrong" + e); // Alert if there is an error during the request
+    try {
+      // Send a POST request to the login endpoint
+      const response = await fetch(`${baseUrl}/login`, {
+        method: "POST",
+        body: JSON.stringify(data), // Convert the data object to a JSON string
+        headers: {
+          "Content-Type": "application/json", // Specify the content type as JSON
+        },
       });
+
+      if (!response.ok) {
+        setFail(true); // Set fail state to true if response is not OK
+        return;
+      }
+
+      const result = await response.json(); // Convert the response to JSON
+      console.log("Login response:", result); // Log the response data
+
+      if (result.user) {
+        // If login is successful, store the user and token in localStorage
+        localStorage.setItem("user", JSON.stringify(result.user));
+        localStorage.setItem("token", result.token);
+        onLoggedIn(result.user, result.token); // Call the onLoggedIn callback with the user and token
+      } else {
+        setFail(true); // Set fail state to true if user data is not present in the response
+      }
+    } catch (e) {
+      console.error("Something went wrong:", e); // Log error in the console
+      alert("Something went wrong: " + e); // Alert if there is an error during the request
+    }
   };
 
   return (
@@ -54,7 +58,7 @@ export const LoginView = ({ onLoggedIn }) => {
         {/* Container for the form with background, padding, rounded corners, and shadow */}
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         {/* Form title */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           {/* Form element with an onSubmit handler */}
           <div className="mb-4">
             <label className="block text-sm font-bold mb-2" htmlFor="username">
@@ -69,6 +73,7 @@ export const LoginView = ({ onLoggedIn }) => {
               required
               minLength="3"
               className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+              autoComplete="username"
             />
           </div>
           <div className="mb-6">
@@ -83,6 +88,7 @@ export const LoginView = ({ onLoggedIn }) => {
               onChange={(e) => setPassword(e.target.value)} // Update the password state on change
               required
               className="shadow appearance-none border rounded w-full py-2 px-3 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              autoComplete="current-password"
             />
           </div>
           <div className="flex items-center justify-between">
