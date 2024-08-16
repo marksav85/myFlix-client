@@ -6,6 +6,7 @@ import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAppContext } from "../../contexts/AppContext";
 
 const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -14,11 +15,12 @@ const MainView = () => {
   const [token, setToken] = useState(storedToken ? storedToken : null);
   const [movies, setMovies] = useState([]);
   const [filter, setFilter] = useState("");
+  const { baseUrl } = useAppContext();
 
   useEffect(() => {
     if (!token) return;
 
-    fetch("https://my-flix-films-d4434240379d.herokuapp.com/movies", {
+    fetch(`${baseUrl}/movies`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAppContext } from "../../contexts/AppContext";
 
 // eslint-disable-next-line react/prop-types
 export const LoginView = ({ onLoggedIn }) => {
@@ -6,6 +7,7 @@ export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [fail, setFail] = useState(false);
+  const { baseUrl } = useAppContext();
 
   // Function to refresh the page
   const refresh = () => window.location.reload(true);
@@ -21,7 +23,7 @@ export const LoginView = ({ onLoggedIn }) => {
     };
 
     // Send a POST request to the login endpoint
-    fetch("https://my-flix-films-d4434240379d.herokuapp.com/login", {
+    fetch(`${baseUrl}/login`, {
       method: "POST",
       body: JSON.stringify(data), // Convert the data object to a JSON string
       headers: {

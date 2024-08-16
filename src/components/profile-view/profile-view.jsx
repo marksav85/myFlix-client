@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import UserInfo from "./user-info";
 import FavoriteMovies from "./favorite-movies";
 import UpdateUser from "./update-user";
+import { useAppContext } from "../../contexts/AppContext";
 
 export const ProfileView = ({ user, token, setUser, movies }) => {
   // Form states
@@ -14,6 +15,8 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
   const [showModal, setShowModal] = useState(false);
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
+  // Base URL
+  const { baseUrl } = useAppContext();
 
   const favoriteMovies = movies.filter((movie) =>
     user.FavoriteMovies.includes(movie.id)
@@ -32,17 +35,14 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
       BirthDate: birthday,
     };
 
-    fetch(
-      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    fetch(`${baseUrl}/users/${user.Username}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -68,15 +68,12 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
   };
 
   const handleDeleteUser = () => {
-    fetch(
-      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    ).then((response) => {
+    fetch(`${baseUrl}/users/${user.Username}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((response) => {
       if (response.ok) {
         setUser(null);
         localStorage.clear();
@@ -179,23 +176,6 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
           <div className="bg-white p-8 rounded-lg max-w-md w-full z-50">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold">Delete account</h3>
-              {/* <button
-                className="text-gray-600 hover:text-gray-800"
-                onClick={handleCloseModal}
-              >
-                <svg
-                  className="h-6 w-6 fill-current"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <title>Close</title>
-                  <path
-                    fillRule="evenodd"
-                    d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button> */}
             </div>
             <p className="mb-4">Are you sure?</p>
             <div className="flex justify-end">

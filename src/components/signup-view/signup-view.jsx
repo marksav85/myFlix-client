@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppContext } from "../../contexts/AppContext";
 
 // Component for the signup form
 export const SignupView = () => {
@@ -11,6 +12,7 @@ export const SignupView = () => {
   const [birthday, setBirthday] = useState("");
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
+  const { baseUrl } = useAppContext();
 
   // Function to refresh the page
   const refresh = () => window.location.reload(true);
@@ -40,7 +42,7 @@ export const SignupView = () => {
     };
 
     // Send POST request to the server
-    fetch("https://my-flix-films-d4434240379d.herokuapp.com/users", {
+    fetch(`${baseUrl}/users`, {
       method: "POST",
       body: JSON.stringify(data), // Convert data to JSON string
       headers: {

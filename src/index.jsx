@@ -1,14 +1,17 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import MainView from "./components/main-view/main-view";
-import "./index.scss"; // Import statement to indicate that you need to bundle `./index.scss`
+import "./index.scss";
+import { AppProvider } from "./contexts/AppContext";
 
 // Main component (will eventually use all the others)
 const MyFlixApplication = () => {
   return (
-    <div className="body-container p-2">
-      <MainView />
-    </div>
+    <AppProvider>
+      <div className="body-container p-2">
+        <MainView />
+      </div>
+    </AppProvider>
   );
 };
 

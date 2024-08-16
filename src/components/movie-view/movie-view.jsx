@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./movie-view.scss";
+import { useAppContext } from "../../contexts/AppContext";
 
 export const MovieView = ({ movies, user, setUser, token }) => {
   const { movieId } = useParams();
   const [isFavorite, setIsFavorite] = useState(false);
+  // Base URL
+  const { baseUrl } = useAppContext();
 
   useEffect(() => {
     const isFavorited = user.FavoriteMovies.includes(movieId);
@@ -12,16 +15,13 @@ export const MovieView = ({ movies, user, setUser, token }) => {
   }, []);
 
   const removeFavorite = () => {
-    fetch(
-      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    fetch(`${baseUrl}/users/${user.Username}/movies/${movieId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (response.ok) {
           return response.json();
