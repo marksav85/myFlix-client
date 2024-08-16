@@ -36,16 +36,13 @@ export const MovieView = ({ movies, user, setUser, token }) => {
   };
 
   const addToFavorite = () => {
-    fetch(
-      `https://my-flix-films-d4434240379d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    fetch(`${baseUrl}/users/${user.Username}/movies/${movieId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (response.ok) {
           return response.json();
