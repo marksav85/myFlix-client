@@ -1,0 +1,101 @@
+{
+  "packId": "2026-09-26T20:00:43Z",
+  "runMode": "controller",
+  "generatedAt": "2026-09-26T20:00:43Z",
+  "verifiedAt": "2026-09-26T20:00:43Z",
+  "repoBranch": "refactor/portfolio-update",
+  "repoHead": "1b322bf7b1b34b8150c5764ce936eb75351c22e1",
+  "scopeHeads": {
+    "docsHead": null,
+    "srcHead": "2e822f15cba467b514160db25130df778a20c00e",
+    "depsHead": "2e822f15cba467b514160db25130df778a20c00e"
+  },
+  "dirtyWorkingTree": false,
+  "stalenessSummary": {
+    "counts": {
+      "flagged": 6,
+      "regenerated": 6,
+      "acknowledged": 0,
+      "verified": 0,
+      "missing": 0
+    },
+    "scopeChanges": {
+      "docs": true,
+      "src": true,
+      "deps": true
+    },
+    "reason": "No previous artifact manifest or artifact pack was present; the full pack was generated from the current repository baseline."
+  },
+  "artifacts": [
+    {
+      "artifactId": "SRC_TREE",
+      "path": "docs/0-ai/artifacts/SRC_TREE.json",
+      "generatedAt": "2026-09-26T20:00:43Z",
+      "verifiedAt": "2026-09-26T20:00:43Z",
+      "status": "regenerated",
+      "sizeBytes": 5485,
+      "contentHash": "b3cc8e0615c3ad19b45b39af0a812de3bfbe3427ce8d0242dfb421d06cfc4f65",
+      "dependsOnScopes": ["src"],
+      "scopeHeadsAtVerify": {"srcHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "warnings": []
+    },
+    {
+      "artifactId": "DOCS_TREE",
+      "path": "docs/0-ai/artifacts/DOCS_TREE.json",
+      "generatedAt": "2026-09-26T20:00:43Z",
+      "verifiedAt": "2026-09-26T20:00:43Z",
+      "status": "regenerated",
+      "sizeBytes": 1942,
+      "contentHash": "67fb6eff50ded3cc80bb99039c676a63c3b3e871cbd076b6b75de9066c76b5c1",
+      "dependsOnScopes": ["docs"],
+      "scopeHeadsAtVerify": {"docsHead": null},
+      "warnings": ["The docs scope did not exist before this baseline generation."]
+    },
+    {
+      "artifactId": "PROJECT_OVERVIEW",
+      "path": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
+      "generatedAt": "2026-09-26T20:00:43Z",
+      "verifiedAt": "2026-09-26T20:00:43Z",
+      "status": "regenerated",
+      "sizeBytes": 3073,
+      "contentHash": "f82f3bdfb893fa91a252cbac4a77421907b6f105419c352d1285029c210e4a51",
+      "dependsOnScopes": ["docs", "deps"],
+      "scopeHeadsAtVerify": {"docsHead": null, "depsHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "warnings": []
+    },
+    {
+      "artifactId": "CONTEXT_SUMMARY",
+      "path": "docs/0-ai/artifacts/CONTEXT_SUMMARY.md",
+      "generatedAt": "2026-09-26T20:00:43Z",
+      "verifiedAt": "2026-09-26T20:00:43Z",
+      "status": "regenerated",
+      "sizeBytes": 2899,
+      "contentHash": "4657c854229c28f2875a83c535a026968a90e51ddbc260b0649f50b88f2e746f",
+      "dependsOnScopes": ["src"],
+      "scopeHeadsAtVerify": {"srcHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "warnings": []
+    },
+    {
+      "artifactId": "SRC_SNAPSHOT_1",
+      "path": "docs/0-ai/artifacts/SRC_SNAPSHOT_1.tsx",
+      "generatedAt": "2026-09-26T20:00:43Z",
+      "verifiedAt": "2026-09-26T20:00:43Z",
+      "status": "regenerated",
+      "sizeBytes": 42101,
+      "contentHash": "5aae4f4fce11ae9e763cd8ec9267106ad6ce933a9c130cf68945fdb4164ac17f",
+      "dependsOnScopes": ["src"],
+      "scopeHeadsAtVerify": {"srcHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "warnings": []
+    },
+    {
+      "artifactId": "ARTIFACT_PACK_MANIFEST",
+      "path": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
+      "generatedAt": "2026-09-26T20:00:43Z",
+      "verifiedAt": "2026-09-26T20:00:43Z",
+      "status": "regenerated",
+      "dependsOnScopes": ["docs", "src", "deps"],
+      "scopeHeadsAtVerify": {"docsHead": null, "srcHead": "2e822f15cba467b514160db25130df778a20c00e", "depsHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "warnings": ["Manifest size and hash are intentionally omitted to avoid self-reference."]
+    }
+  ]
+}
