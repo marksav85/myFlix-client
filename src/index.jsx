@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import MainView from "./components/main-view/main-view";
-import "./index.scss";
+import "./index.css";
 import { AppProvider } from "./contexts/AppContext";
 import { getApiBaseUrl } from "./api/config";
 
