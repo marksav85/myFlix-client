@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 export const NavigationBar = ({ user, onLoggedOut }) => {
@@ -98,13 +99,14 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
                 >
                   My Profile
                 </Link>
-                <a
-                  onClick={onLoggedOut}
+                <button
+                  type="button"
+                  onClick={() => onLoggedOut()}
                   className="px-3 py-2 rounded-md text-sm font-medium"
                   id="navlink"
                 >
                   Logout
-                </a>
+                </button>
               </>
             )}
           </div>
@@ -151,7 +153,7 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
                 My Profile
               </Link>
               <button
-                onClick={onLoggedOut}
+                onClick={() => onLoggedOut()}
                 className="block px-3 py-2 rounded-md text-base font-medium"
                 id="navlink"
               >
@@ -163,4 +165,9 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
       </div>
     </nav>
   );
+};
+
+NavigationBar.propTypes = {
+  user: PropTypes.object,
+  onLoggedOut: PropTypes.func.isRequired,
 };

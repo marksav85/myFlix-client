@@ -55,8 +55,10 @@ describe("MainView", () => {
     expect(await screen.findByText("The Matrix")).toBeInTheDocument();
     expect(screen.getByText("Amelie")).toBeInTheDocument();
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "https://movie-api-mreb.onrender.com/movies",
-      { headers: { Authorization: "Bearer test-token" } }
+      "https://api.test/movies",
+      expect.objectContaining({
+        headers: { Authorization: "Bearer test-token" },
+      })
     );
 
     await user.type(screen.getByPlaceholderText("Search..."), "amelie");

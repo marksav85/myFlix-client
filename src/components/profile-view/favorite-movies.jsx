@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 function FavoriteMovies({ favoriteMovies }) {
@@ -23,5 +24,9 @@ function FavoriteMovies({ favoriteMovies }) {
     </>
   );
 }
+
+FavoriteMovies.propTypes = {
+  favoriteMovies: PropTypes.array.isRequired,
+};
 
 export default FavoriteMovies;

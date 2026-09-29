@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function UpdateUser({
   handleSubmit,
@@ -10,6 +11,7 @@ function UpdateUser({
   setEmail,
   birthday,
   setBirthday,
+  isSaving,
 }) {
   return (
     <div>
@@ -41,9 +43,9 @@ function UpdateUser({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
             minLength="3"
             placeholder="Enter Password"
+            autoComplete="new-password"
           />
         </div>
 
@@ -76,16 +78,30 @@ function UpdateUser({
           />
         </div>
 
-        <button
-          id="button"
-          type="submit"
+      <button
+        id="button"
+        type="submit"
+        disabled={isSaving}
           className="font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
-          Save changes
+          {isSaving ? "Saving..." : "Save changes"}
         </button>
       </form>
     </div>
   );
 }
+
+UpdateUser.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  setUsername: PropTypes.func.isRequired,
+  password: PropTypes.string.isRequired,
+  setPassword: PropTypes.func.isRequired,
+  email: PropTypes.string.isRequired,
+  setEmail: PropTypes.func.isRequired,
+  birthday: PropTypes.string.isRequired,
+  setBirthday: PropTypes.func.isRequired,
+  isSaving: PropTypes.bool.isRequired,
+};
 
 export default UpdateUser;

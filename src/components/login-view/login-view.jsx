@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useAppContext } from "../../contexts/AppContext";
+import { api } from "../../api/client";
 
-// eslint-disable-next-line react/prop-types
-export const LoginView = ({ onLoggedIn }) => {
+export const LoginView = () => {
   // State variables to manage the input values for username and password
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [fail, setFail] = useState(false); // State to track login failure
-  const { baseUrl } = useAppContext();
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, sessionNotice, clearSessionNotice } = useAppContext();
 
   // Handle form submission
   const handleLogin = async (event) => {
@@ -19,35 +20,19 @@ export const LoginView = ({ onLoggedIn }) => {
       Password: password,
     };
 
+    setError("");
+    setIsSubmitting(true);
+
     try {
-      // Send a POST request to the login endpoint
-      const response = await fetch(`${baseUrl}/login`, {
-        method: "POST",
-        body: JSON.stringify(data), // Convert the data object to a JSON string
-        headers: {
-          "Content-Type": "application/json", // Specify the content type as JSON
-        },
-      });
-
-      if (!response.ok) {
-        setFail(true); // Set fail state to true if response is not OK
-        return;
+      const result = await api.login(data);
+      if (!result?.user || !result?.token) {
+        throw new Error("The login response was incomplete.");
       }
-
-      const result = await response.json(); // Convert the response to JSON
-      console.log("Login response:", result); // Log the response data
-
-      if (result.user) {
-        // If login is successful, store the user and token in localStorage
-        localStorage.setItem("user", JSON.stringify(result.user));
-        localStorage.setItem("token", result.token);
-        onLoggedIn(result.user, result.token); // Call the onLoggedIn callback with the user and token
-      } else {
-        setFail(true); // Set fail state to true if user data is not present in the response
-      }
-    } catch (e) {
-      console.error("Something went wrong:", e); // Log error in the console
-      alert("Something went wrong: " + e); // Alert if there is an error during the request
+      login(result.user, result.token);
+    } catch {
+      setError("Login unsuccessful. Please check your details and try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -95,9 +80,10 @@ export const LoginView = ({ onLoggedIn }) => {
             <button
               id="button"
               type="submit"
+              disabled={isSubmitting}
               className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Submit
+              {isSubmitting ? "Signing in..." : "Submit"}
             </button>
             {/* Submit button */}
           </div>
@@ -106,17 +92,20 @@ export const LoginView = ({ onLoggedIn }) => {
         {/* Container for the alert message */}
         <div className="mt-4 w-full max-w-md">
           {/* Display failure message if fail state is true */}
-          {fail && (
+          {(error || sessionNotice) && (
             <div
               className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
               role="alert"
             >
-              <span className="block sm:inline">
-                Login unsuccessful. Please try again.
-              </span>
-              <span
+              <span className="block sm:inline">{error || sessionNotice}</span>
+              <button
+                type="button"
+                aria-label="Dismiss message"
                 className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                onClick={() => refresh()}
+                onClick={() => {
+                  setError("");
+                  clearSessionNotice();
+                }}
               >
                 <svg
                   className="fill-current h-6 w-6 text-yellow-500"
@@ -127,7 +116,7 @@ export const LoginView = ({ onLoggedIn }) => {
                   <title>Close</title>
                   <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
                 </svg>
-              </span>
+              </button>
             </div>
           )}
         </div>

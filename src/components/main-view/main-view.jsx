@@ -6,46 +6,69 @@ import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { api } from "../../api/client";
 import { useAppContext } from "../../contexts/AppContext";
 
 const MainView = () => {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const storedToken = localStorage.getItem("token");
-  const [user, setUser] = useState(storedUser ? storedUser : null);
-  const [token, setToken] = useState(storedToken ? storedToken : null);
   const [movies, setMovies] = useState([]);
   const [filter, setFilter] = useState("");
-  const { baseUrl } = useAppContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [movieError, setMovieError] = useState("");
+  const { user, token, logout, handleApiError } = useAppContext();
 
   useEffect(() => {
-    if (!token) return;
+    const controller = new AbortController();
 
-    fetch(`${baseUrl}/movies`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => response.json())
+    if (!token) {
+      setMovies([]);
+      setIsLoading(false);
+      setMovieError("");
+      return () => controller.abort();
+    }
+
+    setIsLoading(true);
+    setMovieError("");
+
+    api
+      .getMovies(token, controller.signal)
       .then((data) => {
+        if (!Array.isArray(data)) {
+          throw new Error("The movie service returned an invalid response.");
+        }
+
         const moviesFromApi = data.map((movie) => ({
           id: movie._id,
           title: movie.Title,
           description: movie.Description,
-          genre: movie.Genre.Name,
-          director: movie.Director.Name,
+          genre: movie.Genre?.Name || "Unknown",
+          director: movie.Director?.Name || "Unknown",
           image: movie.ImagePath,
         }));
-        setMovies(moviesFromApi);
+        if (!controller.signal.aborted) {
+          setMovies(moviesFromApi);
+        }
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        if (!handleApiError(error)) {
+          setMovieError("Movies could not be loaded. Please try again later.");
+          setMovies([]);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       });
-  }, [token]);
+
+    return () => controller.abort();
+  }, [token, handleApiError]);
 
   return (
     <BrowserRouter>
       <NavigationBar
         user={user}
-        onLoggedOut={() => {
-          setUser(null);
-          setToken(null);
-          localStorage.clear();
-        }}
+        onLoggedOut={logout}
       />
 
       <Routes>
@@ -62,10 +85,6 @@ const MainView = () => {
                 <Navigate to="/" />
               ) : (
                 <LoginView
-                  onLoggedIn={(user, token) => {
-                    setUser(user);
-                    setToken(token);
-                  }}
                 />
               )}
             </>
@@ -81,14 +100,7 @@ const MainView = () => {
               ) : (
                 <ProfileView
                   user={user}
-                  token={token}
-                  setUser={setUser}
                   movies={movies}
-                  onLoggedOut={() => {
-                    setUser(null);
-                    setToken(null);
-                    localStorage.clear();
-                  }}
                 />
               )}
             </>
@@ -101,14 +113,13 @@ const MainView = () => {
             <>
               {!user ? (
                 <Navigate to="/login" replace />
-              ) : movies.length === 0 ? (
-                <div>The list is empty!</div>
+              ) : isLoading ? (
+                <div className="p-4">Loading movies...</div>
+              ) : movieError ? (
+                <div className="p-4" role="alert">{movieError}</div>
               ) : (
                 <MovieView
                   movies={movies}
-                  user={user}
-                  setUser={setUser}
-                  token={token}
                 />
               )}
             </>
@@ -133,8 +144,12 @@ const MainView = () => {
                         className="w-full p-2 border border-gray-300 rounded-md"
                       />
                     </div>
-                    {movies.length === 0 ? (
-                      <div className="w-full">This list is empty!</div>
+                    {isLoading ? (
+                      <div className="w-full" role="status">Loading movies...</div>
+                    ) : movieError ? (
+                      <div className="w-full" role="alert">{movieError}</div>
+                    ) : movies.length === 0 ? (
+                      <div className="w-full">No movies are available.</div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
                         {movies

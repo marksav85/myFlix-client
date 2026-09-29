@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function UserInfo({ email, name }) {
   return (
@@ -9,5 +10,10 @@ function UserInfo({ email, name }) {
     </div>
   );
 }
+
+UserInfo.propTypes = {
+  email: PropTypes.string,
+  name: PropTypes.string.isRequired,
+};
 
 export default UserInfo;

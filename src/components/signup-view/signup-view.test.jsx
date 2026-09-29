@@ -26,7 +26,7 @@ describe("SignupView", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "https://movie-api-mreb.onrender.com/users",
+      "https://api.test/users",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({

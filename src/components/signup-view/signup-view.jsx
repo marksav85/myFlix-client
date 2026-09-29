@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAppContext } from "../../contexts/AppContext";
+import { api } from "../../api/client";
 
 // Component for the signup form
 export const SignupView = () => {
@@ -11,11 +11,8 @@ export const SignupView = () => {
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState("");
   const [success, setSuccess] = useState(false);
-  const [fail, setFail] = useState(false);
-  const { baseUrl } = useAppContext();
-
-  // Function to refresh the page
-  const refresh = () => window.location.reload(true);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Function to handle form submission
   const handleSubmit = (event) => {
@@ -28,8 +25,7 @@ export const SignupView = () => {
 
     // Check if passwords match
     if (!checkPasswordConfirmation(password, confirmPassword)) {
-      alert("The passwords do not match. Please try again."); // Show error message if passwords don't match
-      window.location.reload(); // Reload the page
+      setError("The passwords do not match. Please try again.");
       return;
     }
 
@@ -41,20 +37,13 @@ export const SignupView = () => {
       Birthday: birthday,
     };
 
-    // Send POST request to the server
-    fetch(`${baseUrl}/users`, {
-      method: "POST",
-      body: JSON.stringify(data), // Convert data to JSON string
-      headers: {
-        "Content-Type": "application/json", // Set content type to JSON
-      },
-    }).then((response) => {
-      if (response.ok) {
-        setSuccess(true); // Set success state to true if response is OK
-      } else {
-        setFail(true); // Set fail state to true if response is not OK
-      }
-    });
+    setError("");
+    setIsSubmitting(true);
+    api
+      .signup(data)
+      .then(() => setSuccess(true))
+      .catch(() => setError("Registration unsuccessful. Please try again."))
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -147,9 +136,10 @@ export const SignupView = () => {
         <button
           id="button"
           type="submit"
+          disabled={isSubmitting}
           className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
-          Submit
+          {isSubmitting ? "Creating account..." : "Submit"}
         </button>
         {/* Submit button */}
       </form>
@@ -174,17 +164,19 @@ export const SignupView = () => {
           </div>
         )}
         {/* Display failure message if fail state is true */}
-        {fail && (
+        {error && (
           <div
             className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
             role="alert"
           >
             <span className="block sm:inline">
-              Login unsuccessful. Please try again.
+              {error}
             </span>
-            <span
+            <button
+              type="button"
+              aria-label="Dismiss message"
               className="absolute top-0 bottom-0 right-0 px-4 py-3"
-              onClick={() => refresh()}
+              onClick={() => setError("")}
             >
               <svg
                 className="fill-current h-6 w-6 text-yellow-500"
@@ -195,7 +187,7 @@ export const SignupView = () => {
                 <title>Close</title>
                 <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
               </svg>
-            </span>
+            </button>
           </div>
         )}
       </div>

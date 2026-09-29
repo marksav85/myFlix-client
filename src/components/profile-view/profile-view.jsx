@@ -1,92 +1,100 @@
-/* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 import UserInfo from "./user-info";
 import FavoriteMovies from "./favorite-movies";
 import UpdateUser from "./update-user";
+import { api } from "../../api/client";
 import { useAppContext } from "../../contexts/AppContext";
 
-export const ProfileView = ({ user, token, setUser, movies }) => {
-  // Form states
-  const [username, setUsername] = useState(user.Username);
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(user.Email);
-  const [birthday, setBirthday] = useState("user.BirthDate");
-  // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [fail, setFail] = useState(false);
-  // Base URL
-  const { baseUrl } = useAppContext();
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+};
 
-  const favoriteMovies = movies.filter((movie) =>
-    user.FavoriteMovies.includes(movie.id)
+const emptyUser = {
+  Username: "",
+  Email: "",
+  Birthday: "",
+  FavoriteMovies: [],
+};
+
+export const ProfileView = ({ movies }) => {
+  const { user, token, updateUser, logout, handleApiError } = useAppContext();
+  const currentUser = user || emptyUser;
+  const [username, setUsername] = useState(currentUser.Username);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(currentUser.Email || "");
+  const [birthday, setBirthday] = useState(
+    toDateInputValue(currentUser.Birthday || currentUser.BirthDate)
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setUsername(currentUser.Username);
+    setPassword("");
+    setEmail(currentUser.Email || "");
+    setBirthday(toDateInputValue(currentUser.Birthday || currentUser.BirthDate));
+  }, [currentUser]);
+
+  const favoriteMovies = useMemo(
+    () => movies.filter((movie) => currentUser.FavoriteMovies?.includes(movie.id)),
+    [movies, currentUser.FavoriteMovies]
   );
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setSuccess("");
+    setError("");
+    setIsSaving(true);
 
-    const data = {
-      Username: username,
-      Password: password,
-      Email: email,
-      BirthDate: birthday,
-    };
+    const updates = { Username: username, Email: email, Birthday: birthday };
+    if (password) updates.Password = password;
 
-    fetch(`${baseUrl}/users/${user.Username}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          setFail(true);
-        }
-      })
-      .then((data) => {
-        if (data) {
-          localStorage.setItem("user", JSON.stringify(data));
-          setUser(data);
-          setSuccess(true);
-          resetFormFields();
-        }
-      });
-  };
-
-  const resetFormFields = () => {
-    setUsername(user.Username);
-    setPassword("");
-    setEmail(user.Email);
-    setBirthday("");
-  };
-
-  const handleDeleteUser = () => {
-    fetch(`${baseUrl}/users/${user.Username}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((response) => {
-      if (response.ok) {
-        setUser(null);
-        localStorage.clear();
+    try {
+      const updatedUser = await api.updateUser(currentUser.Username, updates, token);
+      if (updatedUser.Username !== currentUser.Username) {
+        logout("Your username was changed. Please sign in again.");
+        return;
       }
-    });
+      updateUser(updatedUser);
+      setSuccess("Update successful.");
+    } catch (requestError) {
+      if (!handleApiError(requestError)) {
+        setError("Update unsuccessful. Please try again.");
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const handleDeleteUser = async () => {
+    setError("");
+    setIsDeleting(true);
+    try {
+      await api.deleteUser(currentUser.Username, token);
+      logout();
+    } catch (requestError) {
+      if (!handleApiError(requestError)) {
+        setError("Account deletion unsuccessful. Please try again.");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (!user) return null;
 
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div className="user-containers">
           <div className="bg-white shadow-md rounded-lg p-4">
-            <UserInfo name={user.Username} email={user.Email} />
+            <UserInfo name={currentUser.Username} email={currentUser.Email} />
           </div>
         </div>
         <div className="user-containers">
@@ -101,94 +109,32 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
               password={password}
               email={email}
               birthday={birthday}
+              isSaving={isSaving}
             />
           </div>
-          <div>
-            {success && (
-              <div className="mt-4">
-                <div
-                  className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                  role="alert"
-                >
-                  <span className="block sm:inline">Update successful.</span>
-                  <span
-                    className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                    onClick={() => {
-                      setSuccess(false);
-                      resetFormFields();
-                    }}
-                  >
-                    <svg
-                      className="fill-current h-6 w-6 text-green-500"
-                      role="button"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <title>Close</title>
-                      <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            )}
-            {fail && (
-              <div className="mt-4">
-                <div
-                  className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-                  role="alert"
-                >
-                  <span className="block sm:inline">Update unsuccessful.</span>
-                  <span
-                    className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                    onClick={() => setFail(false)}
-                  >
-                    <svg
-                      className="fill-current h-6 w-6 text-yellow-500"
-                      role="button"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <title>Close</title>
-                      <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
+          {success && <p className="mt-4 text-green-700" role="status">{success}</p>}
+          {error && <p className="mt-4 text-yellow-700" role="alert">{error}</p>}
         </div>
       </div>
       <div className="bg-white shadow-md rounded-lg p-4 mb-4">
         <FavoriteMovies favoriteMovies={favoriteMovies} />
       </div>
 
-      <button
-        id="button"
-        className=" font-bold py-2 px-4 rounded"
-        onClick={handleShowModal}
-      >
+      <button id="button" className="font-bold py-2 px-4 rounded" onClick={() => setShowModal(true)}>
         Delete account
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center">
-          <div className="absolute inset-0 bg-gray-900 opacity-75"></div>
+        <div className="fixed inset-0 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
+          <div className="absolute inset-0 bg-gray-900 opacity-75" />
           <div className="bg-white p-8 rounded-lg max-w-md w-full z-50">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Delete account</h3>
-            </div>
+            <h3 id="delete-account-title" className="text-lg font-bold mb-4">Delete account</h3>
             <p className="mb-4">Are you sure?</p>
             <div className="flex justify-end">
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
-                onClick={handleDeleteUser}
-              >
-                Yes
+              <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={handleDeleteUser} disabled={isDeleting}>
+                {isDeleting ? "Deleting..." : "Yes"}
               </button>
-              <button
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-                onClick={handleCloseModal}
-              >
+              <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" onClick={() => setShowModal(false)} disabled={isDeleting}>
                 No
               </button>
             </div>
@@ -197,4 +143,8 @@ export const ProfileView = ({ user, token, setUser, movies }) => {
       )}
     </div>
   );
+};
+
+ProfileView.propTypes = {
+  movies: PropTypes.array.isRequired,
 };
