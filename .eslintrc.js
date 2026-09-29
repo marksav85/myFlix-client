@@ -5,6 +5,11 @@ module.exports = {
     node: true, // Add node environment globally
   },
   extends: ["eslint:recommended", "plugin:react/recommended"],
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
   overrides: [
     {
       files: [
@@ -21,11 +26,21 @@ module.exports = {
         sourceType: "script", // Ensure source type is script for these files
       },
     },
+    {
+      files: ["**/*.test.{js,jsx}"],
+      globals: {
+        describe: "readonly",
+        expect: "readonly",
+        it: "readonly",
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
   },
   plugins: ["react"],
-  rules: {},
+  rules: {
+    "react/react-in-jsx-scope": "off",
+  },
 };
