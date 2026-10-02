@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { vi } from "vitest";
@@ -40,7 +40,7 @@ describe("Phase 2 regression behavior", () => {
     localStorage.setItem("user", "not-json");
     localStorage.setItem("token", "stale-token");
 
-    renderWithAuth(<LoginView />);
+    renderWithAuth(<MemoryRouter><LoginView /></MemoryRouter>);
 
     expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
     expect(localStorage.getItem("user")).toBeNull();
@@ -52,17 +52,18 @@ describe("Phase 2 regression behavior", () => {
     globalThis.fetch = vi.fn().mockResolvedValue(
       response({ message: "invalid credentials" }, { ok: false, status: 401 })
     );
-    renderWithAuth(<LoginView />);
+    renderWithAuth(<MemoryRouter><LoginView /></MemoryRouter>);
 
     await user.type(screen.getByLabelText("Username:"), "Ada");
     await user.type(screen.getByLabelText("Password:"), "wrong-password");
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Login" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Login unsuccessful"
     );
     await user.click(screen.getByRole("button", { name: "Dismiss message" }));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Username:")).toHaveFocus();
   });
 
   it.each([401, 403])(
@@ -116,7 +117,7 @@ describe("Phase 2 regression behavior", () => {
     );
 
     expect(screen.getByText("Movie not found.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to movies" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Back to Movies" })).toHaveAttribute(
       "href",
       "/"
     );
@@ -129,11 +130,11 @@ describe("Phase 2 regression behavior", () => {
     const updatedUser = { ...authenticatedUser, Email: "new@example.com" };
     globalThis.fetch = vi.fn().mockResolvedValue(response(updatedUser));
 
-    renderWithAuth(<ProfileView movies={[]} />);
+    renderWithAuth(<MemoryRouter><ProfileView movies={[]} /></MemoryRouter>);
     expect(screen.getByLabelText("Birthday:")).toHaveValue("1990-01-01");
     await user.clear(screen.getByLabelText("Email:"));
     await user.type(screen.getByLabelText("Email:"), "new@example.com");
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
       "https://api.test/users/Ada",
@@ -146,7 +147,7 @@ describe("Phase 2 regression behavior", () => {
         }),
       })
     );
-    expect(await screen.findByRole("status")).toHaveTextContent("Update successful.");
+    expect(await within(screen.getByRole("region", { name: "Update Account" })).findByRole("status")).toHaveTextContent("Update successful.");
     expect(JSON.parse(localStorage.getItem("user"))).toEqual(updatedUser);
   });
 
@@ -157,11 +158,11 @@ describe("Phase 2 regression behavior", () => {
     globalThis.fetch = vi.fn().mockResolvedValue(
       response({ ...authenticatedUser, Username: "Grace" })
     );
-    renderWithAuth(<ProfileView movies={[]} />);
+    renderWithAuth(<MemoryRouter><ProfileView movies={[]} /></MemoryRouter>);
 
     await user.clear(screen.getByLabelText("Username:"));
     await user.type(screen.getByLabelText("Username:"), "Grace");
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     expect(localStorage.getItem("user")).toBeNull();
     expect(localStorage.getItem("token")).toBeNull();
@@ -184,8 +185,8 @@ describe("Phase 2 regression behavior", () => {
       </AppProvider>
     );
 
-    await user.click(screen.getByRole("button", { name: "Add to favorites" }));
-    expect(await screen.findByRole("button", { name: "Remove from favorites" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Add to Favorites" }));
+    expect(await screen.findByRole("button", { name: "Remove from Favorites" })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem("user")).FavoriteMovies).toEqual(["movie-1"]);
   });
 
@@ -205,7 +206,7 @@ describe("Phase 2 regression behavior", () => {
     await user.type(screen.getByLabelText("Confirm Password:"), "correct-horse");
     await user.type(screen.getByLabelText("Email:"), "ada@example.com");
     await user.type(screen.getByLabelText("Birthday:"), "1990-01-01");
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Signup" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Registration unsuccessful"

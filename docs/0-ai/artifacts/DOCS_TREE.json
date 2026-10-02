@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-26T20:00:43Z",
+  "generatedAt": "2026-10-02T14:29:24Z",
   "root": "docs",
   "summary": {
-    "totalFiles": 4,
-    "totalDirectories": 2,
+    "totalFiles": 7,
+    "totalDirectories": 4,
     "byExtension": {
-      ".json": 2,
-      ".md": 1,
+      ".json": 4,
+      ".md": 2,
       ".tsx": 1
     }
   },
@@ -23,44 +23,106 @@
           "children": [
             {
               "type": "file",
+              "name": "ARTIFACT_PACK_MANIFEST.json",
+              "relativePath": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
+              "extension": ".json",
+              "sizeKB": 5.0,
+              "tier": "core",
+              "riskIfMissing": "medium",
+              "tags": [
+                "artifacts"
+              ]
+            },
+            {
+              "type": "file",
               "name": "CONTEXT_SUMMARY.md",
               "relativePath": "docs/0-ai/artifacts/CONTEXT_SUMMARY.md",
               "extension": ".md",
-              "sizeKB": 2.8,
+              "sizeKB": 7.5,
               "tier": "core",
               "riskIfMissing": "medium",
-              "tags": ["artifacts", "context"]
+              "tags": [
+                "artifacts",
+                "context"
+              ]
+            },
+            {
+              "type": "file",
+              "name": "DOCS_TREE.json",
+              "relativePath": "docs/0-ai/artifacts/DOCS_TREE.json",
+              "extension": ".json",
+              "sizeKB": 3.4,
+              "tier": "core",
+              "riskIfMissing": "medium",
+              "tags": [
+                "artifacts",
+                "structure"
+              ]
             },
             {
               "type": "file",
               "name": "PROJECT_OVERVIEW.json",
               "relativePath": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
               "extension": ".json",
-              "sizeKB": 3.0,
+              "sizeKB": 3.8,
               "tier": "core",
               "riskIfMissing": "medium",
-              "tags": ["artifacts", "context"]
-            },
-            {
-              "type": "file",
-              "name": "SRC_TREE.json",
-              "relativePath": "docs/0-ai/artifacts/SRC_TREE.json",
-              "extension": ".json",
-              "sizeKB": 5.4,
-              "tier": "core",
-              "riskIfMissing": "medium",
-              "tags": ["artifacts", "structure"]
+              "tags": [
+                "artifacts",
+                "context"
+              ]
             },
             {
               "type": "file",
               "name": "SRC_SNAPSHOT_1.tsx",
               "relativePath": "docs/0-ai/artifacts/SRC_SNAPSHOT_1.tsx",
               "extension": ".tsx",
-              "sizeKB": 41.1,
+              "sizeKB": 43.2,
               "tier": "core",
               "riskIfMissing": "medium",
-              "tags": ["artifacts", "context"]
+              "tags": [
+                "artifacts"
+              ]
+            },
+            {
+              "type": "file",
+              "name": "SRC_TREE.json",
+              "relativePath": "docs/0-ai/artifacts/SRC_TREE.json",
+              "extension": ".json",
+              "sizeKB": 7.8,
+              "tier": "core",
+              "riskIfMissing": "medium",
+              "tags": [
+                "artifacts",
+                "structure"
+              ]
             }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "name": "design",
+      "relativePath": "docs/design",
+      "children": [
+        {
+          "type": "directory",
+          "name": "assets",
+          "relativePath": "docs/design/assets",
+          "children": []
+        },
+        {
+          "type": "file",
+          "name": "DESIGN.md",
+          "relativePath": "docs/design/DESIGN.md",
+          "extension": ".md",
+          "sizeKB": 18.5,
+          "tier": "reference",
+          "riskIfMissing": "medium",
+          "tags": [
+            "structure",
+            "context"
           ]
         }
       ]

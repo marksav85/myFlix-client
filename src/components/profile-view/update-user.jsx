@@ -12,82 +12,43 @@ function UpdateUser({
   birthday,
   setBirthday,
   isSaving,
+  success = "",
+  error = "",
 }) {
   return (
-    <div>
-      <h3 className="text-lg font-bold mb-4">Update Your Details</h3>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium">
-            Username:
-          </label>
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            minLength="3"
-            placeholder="Enter Username"
-          />
+    <section className="profile-panel" aria-labelledby="update-account-title">
+      <h2 id="update-account-title" className="mb-6 text-heading-md">Update Account</h2>
+      <form onSubmit={handleSubmit} className="space-y-4" aria-busy={isSaving}
+        aria-describedby={error ? "profile-update-error" : undefined}>
+        <div>
+          <label htmlFor="profile-username" className="form-label">Username:</label>
+          <input id="profile-username" type="text" value={username} onChange={(event) => setUsername(event.target.value)}
+            className="form-input" required minLength="3" placeholder="Enter Username" autoComplete="username" />
         </div>
-
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password:
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            minLength="3"
-            placeholder="Enter Password"
-            autoComplete="new-password"
-          />
+        <div>
+          <label htmlFor="profile-password" className="form-label">Password:</label>
+          <input id="profile-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)}
+            className="form-input" minLength="3" placeholder="Enter Password" autoComplete="new-password"
+            aria-describedby="profile-password-help" />
+          <p id="profile-password-help" className="mt-2 text-body-sm text-text-muted">Optional. Leave blank to keep your current password.</p>
         </div>
-
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email:
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            placeholder="Enter Email"
-          />
+        <div>
+          <label htmlFor="profile-email" className="form-label">Email:</label>
+          <input id="profile-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)}
+            className="form-input" required placeholder="Enter Email" autoComplete="email" />
         </div>
-
-        <div className="mb-4">
-          <label htmlFor="birthday" className="block text-sm font-medium">
-            Birthday:
-          </label>
-          <input
-            id="birthday"
-            type="date"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-          />
+        <div>
+          <label htmlFor="profile-birthday" className="form-label">Birthday:</label>
+          <input id="profile-birthday" type="date" value={birthday} onChange={(event) => setBirthday(event.target.value)}
+            className="form-input" required autoComplete="bday" />
         </div>
-
-      <button
-        id="button"
-        type="submit"
-        disabled={isSaving}
-          className="font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          {isSaving ? "Saving..." : "Save changes"}
+        <button type="submit" disabled={isSaving} className="button button-primary">
+          {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </form>
-    </div>
+      {success && <p className="mt-4 text-text-secondary" role="status">{success}</p>}
+      {error && <p id="profile-update-error" className="mt-4 text-text-secondary" role="alert">{error}</p>}
+    </section>
   );
 }
 
@@ -102,6 +63,8 @@ UpdateUser.propTypes = {
   birthday: PropTypes.string.isRequired,
   setBirthday: PropTypes.func.isRequired,
   isSaving: PropTypes.bool.isRequired,
+  success: PropTypes.string,
+  error: PropTypes.string,
 };
 
 export default UpdateUser;

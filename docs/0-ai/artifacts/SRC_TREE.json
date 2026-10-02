@@ -1,11 +1,38 @@
 {
-  "generatedAt": "2026-09-26T20:00:43Z",
+  "generatedAt": "2026-10-02T14:29:24Z",
   "root": "src",
   "summary": {
-    "totalFiles": 12,
-    "totalDirectories": 9
+    "totalFiles": 16,
+    "totalDirectories": 13
   },
   "tree": [
+    {
+      "type": "directory",
+      "name": "api",
+      "relativePath": "src/api",
+      "children": [
+        {
+          "type": "file",
+          "name": "client.js",
+          "relativePath": "src/api/client.js",
+          "extension": ".js",
+          "sizeKB": 2.1,
+          "isComponent": false,
+          "imports": [
+            "src/api/config.js"
+          ]
+        },
+        {
+          "type": "file",
+          "name": "config.js",
+          "relativePath": "src/api/config.js",
+          "extension": ".js",
+          "sizeKB": 0.3,
+          "isComponent": false,
+          "imports": []
+        }
+      ]
+    },
     {
       "type": "directory",
       "name": "components",
@@ -21,9 +48,12 @@
               "name": "login-view.jsx",
               "relativePath": "src/components/login-view/login-view.jsx",
               "extension": ".jsx",
-              "sizeKB": 5.6,
+              "sizeKB": 3.5,
               "isComponent": true,
-              "imports": ["src/contexts/AppContext.js"]
+              "imports": [
+                "src/contexts/AppContext.jsx",
+                "src/api/client.js"
+              ]
             }
           ]
         },
@@ -37,9 +67,18 @@
               "name": "main-view.jsx",
               "relativePath": "src/components/main-view/main-view.jsx",
               "extension": ".jsx",
-              "sizeKB": 5.0,
+              "sizeKB": 5.4,
               "isComponent": true,
-              "imports": ["src/components/movie-card/movie-card.jsx", "src/components/movie-view/movie-view.jsx", "src/components/login-view/login-view.jsx", "src/components/signup-view/signup-view.jsx", "src/components/navigation-bar/navigation-bar.jsx", "src/components/profile-view/profile-view.jsx", "src/contexts/AppContext.js"]
+              "imports": [
+                "src/components/movie-card/movie-card.jsx",
+                "src/components/movie-view/movie-view.jsx",
+                "src/components/login-view/login-view.jsx",
+                "src/components/signup-view/signup-view.jsx",
+                "src/components/navigation-bar/navigation-bar.jsx",
+                "src/components/profile-view/profile-view.jsx",
+                "src/api/client.js",
+                "src/contexts/AppContext.jsx"
+              ]
             }
           ]
         },
@@ -53,9 +92,11 @@
               "name": "movie-card.jsx",
               "relativePath": "src/components/movie-card/movie-card.jsx",
               "extension": ".jsx",
-              "sizeKB": 1.3,
+              "sizeKB": 2.3,
               "isComponent": true,
-              "imports": []
+              "imports": [
+                "src/hooks/useFavorite.js"
+              ]
             }
           ]
         },
@@ -69,9 +110,11 @@
               "name": "movie-view.jsx",
               "relativePath": "src/components/movie-view/movie-view.jsx",
               "extension": ".jsx",
-              "sizeKB": 3.4,
+              "sizeKB": 2.6,
               "isComponent": true,
-              "imports": ["src/contexts/AppContext.js"]
+              "imports": [
+                "src/hooks/useFavorite.js"
+              ]
             }
           ]
         },
@@ -85,7 +128,7 @@
               "name": "navigation-bar.jsx",
               "relativePath": "src/components/navigation-bar/navigation-bar.jsx",
               "extension": ".jsx",
-              "sizeKB": 5.0,
+              "sizeKB": 2.9,
               "isComponent": true,
               "imports": []
             }
@@ -101,25 +144,33 @@
               "name": "favorite-movies.jsx",
               "relativePath": "src/components/profile-view/favorite-movies.jsx",
               "extension": ".jsx",
-              "sizeKB": 0.8,
+              "sizeKB": 1.1,
               "isComponent": true,
-              "imports": []
+              "imports": [
+                "src/components/movie-card/movie-card.jsx"
+              ]
             },
             {
               "type": "file",
               "name": "profile-view.jsx",
               "relativePath": "src/components/profile-view/profile-view.jsx",
               "extension": ".jsx",
-              "sizeKB": 7.5,
+              "sizeKB": 8.3,
               "isComponent": true,
-              "imports": ["src/components/profile-view/user-info.jsx", "src/components/profile-view/favorite-movies.jsx", "src/components/profile-view/update-user.jsx", "src/contexts/AppContext.js"]
+              "imports": [
+                "src/components/profile-view/user-info.jsx",
+                "src/components/profile-view/favorite-movies.jsx",
+                "src/components/profile-view/update-user.jsx",
+                "src/api/client.js",
+                "src/contexts/AppContext.jsx"
+              ]
             },
             {
               "type": "file",
               "name": "update-user.jsx",
               "relativePath": "src/components/profile-view/update-user.jsx",
               "extension": ".jsx",
-              "sizeKB": 2.8,
+              "sizeKB": 2.9,
               "isComponent": true,
               "imports": []
             },
@@ -128,7 +179,7 @@
               "name": "user-info.jsx",
               "relativePath": "src/components/profile-view/user-info.jsx",
               "extension": ".jsx",
-              "sizeKB": 0.3,
+              "sizeKB": 0.9,
               "isComponent": true,
               "imports": []
             }
@@ -144,9 +195,11 @@
               "name": "signup-view.jsx",
               "relativePath": "src/components/signup-view/signup-view.jsx",
               "extension": ".jsx",
-              "sizeKB": 7.4,
+              "sizeKB": 5.3,
               "isComponent": true,
-              "imports": ["src/contexts/AppContext.js"]
+              "imports": [
+                "src/api/client.js"
+              ]
             }
           ]
         }
@@ -159,13 +212,70 @@
       "children": [
         {
           "type": "file",
-          "name": "AppContext.js",
-          "relativePath": "src/contexts/AppContext.js",
+          "name": "AppContext.jsx",
+          "relativePath": "src/contexts/AppContext.jsx",
+          "extension": ".jsx",
+          "sizeKB": 2.8,
+          "isComponent": true,
+          "imports": [
+            "src/api/client.js"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "name": "hooks",
+      "relativePath": "src/hooks",
+      "children": [
+        {
+          "type": "file",
+          "name": "useFavorite.js",
+          "relativePath": "src/hooks/useFavorite.js",
           "extension": ".js",
-          "sizeKB": 0.5,
+          "sizeKB": 1.2,
+          "isComponent": false,
+          "imports": [
+            "src/api/client.js",
+            "src/contexts/AppContext.jsx"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "name": "img",
+      "relativePath": "src/img",
+      "children": []
+    },
+    {
+      "type": "directory",
+      "name": "test",
+      "relativePath": "src/test",
+      "children": [
+        {
+          "type": "file",
+          "name": "setup.js",
+          "relativePath": "src/test/setup.js",
+          "extension": ".js",
+          "sizeKB": 0.3,
           "isComponent": false,
           "imports": []
         }
+      ]
+    },
+    {
+      "type": "file",
+      "name": "index.jsx",
+      "relativePath": "src/index.jsx",
+      "extension": ".jsx",
+      "sizeKB": 0.8,
+      "isComponent": false,
+      "imports": [
+        "src/components/main-view/main-view.jsx",
+        "src/index.css",
+        "src/contexts/AppContext.jsx",
+        "src/api/config.js"
       ]
     }
   ]

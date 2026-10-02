@@ -1,28 +1,4 @@
-// ARTIFACT_META: {"artifactId":"SRC_SNAPSHOT_1","packId":"2026-09-26T20:00:43Z","generatedAt":"2026-09-26T20:00:43Z","generator":"prompt--artifact--generate-snapshot.md"}
-// ===== FILE: src/index.jsx =====
-import React from "react";
-import { createRoot } from "react-dom/client";
-import MainView from "./components/main-view/main-view";
-import "./index.scss";
-import { AppProvider } from "./contexts/AppContext";
-
-// Main component (will eventually use all the others)
-const MyFlixApplication = () => {
-  return (
-    <AppProvider>
-      <div className="body-container p-2">
-        <MainView />
-      </div>
-    </AppProvider>
-  );
-};
-
-// Finds the root of your app
-const container = document.querySelector("#root");
-const root = createRoot(container);
-
-// Tells React to render your app in the root DOM element
-root.render(<MyFlixApplication />);
+// ARTIFACT_META: {"artifactId":"SRC_SNAPSHOT_1","packId":"2026-10-02T14:29:24Z","generatedAt":"2026-10-02T14:29:24Z","generator":"prompt--artifact--generate-snapshot.md"}
 
 // ===== FILE: src/components/main-view/main-view.jsx =====
 import React, { useState, useEffect } from "react";
@@ -32,49 +8,77 @@ import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
+import { api } from "../../api/client";
 import { useAppContext } from "../../contexts/AppContext";
 
 const MainView = () => {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const storedToken = localStorage.getItem("token");
-  const [user, setUser] = useState(storedUser ? storedUser : null);
-  const [token, setToken] = useState(storedToken ? storedToken : null);
   const [movies, setMovies] = useState([]);
   const [filter, setFilter] = useState("");
-  const { baseUrl } = useAppContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [movieError, setMovieError] = useState("");
+  const { user, token, logout, handleApiError } = useAppContext();
 
   useEffect(() => {
-    if (!token) return;
+    const controller = new AbortController();
 
-    fetch(`${baseUrl}/movies`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => response.json())
+    if (!token) {
+      setMovies([]);
+      setIsLoading(false);
+      setMovieError("");
+      return () => controller.abort();
+    }
+
+    setIsLoading(true);
+    setMovieError("");
+
+    api
+      .getMovies(token, controller.signal)
       .then((data) => {
+        if (!Array.isArray(data)) {
+          throw new Error("The movie service returned an invalid response.");
+        }
+
         const moviesFromApi = data.map((movie) => ({
           id: movie._id,
           title: movie.Title,
           description: movie.Description,
-          genre: movie.Genre.Name,
-          director: movie.Director.Name,
+          genre: movie.Genre?.Name || "Unknown",
+          director: movie.Director?.Name || "Unknown",
           image: movie.ImagePath,
         }));
-        setMovies(moviesFromApi);
+        if (!controller.signal.aborted) {
+          setMovies(moviesFromApi);
+        }
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        if (!handleApiError(error)) {
+          setMovieError("Movies could not be loaded. Please try again later.");
+          setMovies([]);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       });
-  }, [token]);
+
+    return () => controller.abort();
+  }, [token, handleApiError]);
+
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <BrowserRouter>
       <NavigationBar
         user={user}
-        onLoggedOut={() => {
-          setUser(null);
-          setToken(null);
-          localStorage.clear();
-        }}
+        onLoggedOut={logout}
       />
 
+      <main id="main-content" tabIndex={-1} className="page-container py-6">
       <Routes>
         <Route
           path="/signup"
@@ -89,10 +93,6 @@ const MainView = () => {
                 <Navigate to="/" />
               ) : (
                 <LoginView
-                  onLoggedIn={(user, token) => {
-                    setUser(user);
-                    setToken(token);
-                  }}
                 />
               )}
             </>
@@ -106,17 +106,7 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : (
-                <ProfileView
-                  user={user}
-                  token={token}
-                  setUser={setUser}
-                  movies={movies}
-                  onLoggedOut={() => {
-                    setUser(null);
-                    setToken(null);
-                    localStorage.clear();
-                  }}
-                />
+                <ProfileView movies={movies} isLoadingMovies={isLoading} movieError={movieError} />
               )}
             </>
           }
@@ -128,15 +118,15 @@ const MainView = () => {
             <>
               {!user ? (
                 <Navigate to="/login" replace />
-              ) : movies.length === 0 ? (
-                <div>The list is empty!</div>
+              ) : isLoading ? (
+                <p className="library-notice" role="status">Loading movies...</p>
+              ) : movieError ? (
+                <div className="library-notice" role="alert">
+                  <p>{movieError}</p>
+                  <Link to="/" className="button button-secondary mt-4">Back to Movies</Link>
+                </div>
               ) : (
-                <MovieView
-                  movies={movies}
-                  user={user}
-                  setUser={setUser}
-                  token={token}
-                />
+                <MovieView movies={movies} />
               )}
             </>
           }
@@ -149,44 +139,34 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : (
-                <div className="flex items-center justify-center">
-                  <div className="w-full sm:w-9/10 lg:w-4/5 mx-auto flex flex-col items-center justify-center">
-                    <div id="searchbar" className="mt-1 mb-1 w-full">
-                      <input
-                        type="text"
-                        placeholder="Search..."
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                    {movies.length === 0 ? (
-                      <div className="w-full">This list is empty!</div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
-                        {movies
-                          .filter((movie) =>
-                            movie.title
-                              .toLowerCase()
-                              .includes(filter.toLowerCase())
-                          )
-                          .map((movie) => (
-                            <div
-                              key={movie.id}
-                              className="bg-white shadow-md rounded-lg overflow-hidden"
-                            >
-                              <MovieCard movie={movie} />
-                            </div>
-                          ))}
-                      </div>
-                    )}
+                <section aria-labelledby="movie-library-title">
+                  <h1 id="movie-library-title" className="text-heading-lg-mobile sm:text-heading-lg">Movie Library</h1>
+                  <div role="search" aria-label="Movie library" className="my-6 max-w-md">
+                    <label htmlFor="movie-search" className="form-label">Search movies</label>
+                    <input id="movie-search" type="search" placeholder="Search by title..."
+                      value={filter} onChange={(event) => setFilter(event.target.value)}
+                      className="form-input" />
                   </div>
-                </div>
+                  {isLoading ? (
+                    <p className="library-notice" role="status">Loading movies...</p>
+                  ) : movieError ? (
+                    <p className="library-notice" role="alert">{movieError}</p>
+                  ) : movies.length === 0 ? (
+                    <p className="library-notice" role="status">No movies are available.</p>
+                  ) : filteredMovies.length === 0 ? (
+                    <p className="library-notice" role="status">No movies match your search. Try another title.</p>
+                  ) : (
+                    <div className="movie-grid">
+                      {filteredMovies.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
+                    </div>
+                  )}
+                </section>
               )}
             </>
           }
         />
       </Routes>
+      </main>
     </BrowserRouter>
   );
 };
@@ -194,16 +174,19 @@ const MainView = () => {
 export default MainView;
 
 // ===== FILE: src/components/login-view/login-view.jsx =====
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
+import { api } from "../../api/client";
 
-// eslint-disable-next-line react/prop-types
-export const LoginView = ({ onLoggedIn }) => {
+export const LoginView = () => {
   // State variables to manage the input values for username and password
+  const usernameInput = useRef(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [fail, setFail] = useState(false); // State to track login failure
-  const { baseUrl } = useAppContext();
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, sessionNotice, clearSessionNotice } = useAppContext();
 
   // Handle form submission
   const handleLogin = async (event) => {
@@ -215,130 +198,584 @@ export const LoginView = ({ onLoggedIn }) => {
       Password: password,
     };
 
+    setError("");
+    setIsSubmitting(true);
+
     try {
-      // Send a POST request to the login endpoint
-      const response = await fetch(`${baseUrl}/login`, {
-        method: "POST",
-        body: JSON.stringify(data), // Convert the data object to a JSON string
-        headers: {
-          "Content-Type": "application/json", // Specify the content type as JSON
-        },
-      });
-
-      if (!response.ok) {
-        setFail(true); // Set fail state to true if response is not OK
-        return;
+      const result = await api.login(data);
+      if (!result?.user || !result?.token) {
+        throw new Error("The login response was incomplete.");
       }
-
-      const result = await response.json(); // Convert the response to JSON
-      console.log("Login response:", result); // Log the response data
-
-      if (result.user) {
-        // If login is successful, store the user and token in localStorage
-        localStorage.setItem("user", JSON.stringify(result.user));
-        localStorage.setItem("token", result.token);
-        onLoggedIn(result.user, result.token); // Call the onLoggedIn callback with the user and token
-      } else {
-        setFail(true); // Set fail state to true if user data is not present in the response
-      }
-    } catch (e) {
-      console.error("Something went wrong:", e); // Log error in the console
-      alert("Something went wrong: " + e); // Alert if there is an error during the request
+      login(result.user, result.token);
+    } catch {
+      setError("Login unsuccessful. Please check your details and try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      {/* Center the login form vertically and horizontally */}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        {/* Container for the form with background, padding, rounded corners, and shadow */}
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        {/* Form title */}
-        <form onSubmit={handleLogin}>
-          {/* Form element with an onSubmit handler */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold mb-2" htmlFor="username">
-              Username:
-            </label>
-            {/* Username input field */}
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)} // Update the username state on change
-              required
-              minLength="3"
-              className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-              autoComplete="username"
-            />
+    <div className="auth-layout">
+      <section className="auth-panel" aria-labelledby="login-title">
+        <h1 id="login-title" className="mb-6 text-heading-lg-mobile sm:text-heading-lg">Login</h1>
+        <form onSubmit={handleLogin} aria-busy={isSubmitting}
+          aria-describedby={(error || sessionNotice) ? "login-feedback" : undefined} className="space-y-4">
+          <div>
+            <label className="form-label" htmlFor="login-username">Username:</label>
+            <input ref={usernameInput} id="login-username" name="username" type="text" value={username}
+              onChange={(event) => setUsername(event.target.value)} required
+              autoComplete="username" className="form-input" minLength="3" />
           </div>
-          <div className="mb-6">
-            <label className="block text-sm font-bold mb-2" htmlFor="password">
-              Password:
-            </label>
-            {/* Password input field */}
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} // Update the password state on change
-              required
-              className="shadow appearance-none border rounded w-full py-2 px-3 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              autoComplete="current-password"
-            />
+          <div>
+            <label className="form-label" htmlFor="login-password">Password:</label>
+            <input id="login-password" name="password" type="password" value={password}
+              onChange={(event) => setPassword(event.target.value)} required
+              autoComplete="current-password" className="form-input" />
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              id="button"
-              type="submit"
-              className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Submit
-            </button>
-            {/* Submit button */}
-          </div>
+          <button type="submit" disabled={isSubmitting} className="button button-primary w-full">
+            {isSubmitting ? "Signing in..." : "Login"}
+          </button>
         </form>
-
-        {/* Container for the alert message */}
-        <div className="mt-4 w-full max-w-md">
-          {/* Display failure message if fail state is true */}
-          {fail && (
-            <div
-              className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-              role="alert"
-            >
-              <span className="block sm:inline">
-                Login unsuccessful. Please try again.
-              </span>
-              <span
-                className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                onClick={() => refresh()}
-              >
-                <svg
-                  className="fill-current h-6 w-6 text-yellow-500"
-                  role="button"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <title>Close</title>
-                  <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
-                </svg>
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
+        {(error || sessionNotice) && (
+          <div id="login-feedback" className="auth-notice mt-4" role="alert">
+            <p className="min-w-0 flex-1">{error || sessionNotice}</p>
+            <button type="button" aria-label="Dismiss message" className="button button-secondary shrink-0 px-3"
+              onClick={() => {
+                setError("");
+                clearSessionNotice();
+                usernameInput.current?.focus();
+              }}>
+              <svg aria-hidden="true" focusable="false" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 6l12 12M6 18L18 6" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        )}
+        <p className="mt-6 text-text-secondary">
+          Need an account?{" "}
+          <Link to="/signup" className="auth-link">Signup</Link>
+        </p>
+      </section>
     </div>
   );
 };
 
-// ===== FILE: src/components/signup-view/signup-view.jsx =====
-import React, { useState } from "react";
+// ===== FILE: src/components/movie-card/movie-card.jsx =====
+import React, { useId } from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useFavorite } from "../../hooks/useFavorite";
+
+export const MovieCard = ({ movie, headingLevel = 2 }) => {
+  const { isFavorite, isPending, error, toggleFavorite } = useFavorite(movie.id);
+  const Heading = `h${headingLevel}`;
+  const titleId = useId();
+  const errorId = useId();
+
+  return (
+    <article className="movie-card" aria-labelledby={titleId}>
+      <img className="aspect-[2/3] w-full object-cover" src={movie.image}
+        alt={`${movie.title} poster`} loading="lazy" />
+      <div className="flex flex-1 flex-col p-4">
+        <Heading id={titleId} className="mb-3 line-clamp-2 min-h-[52px] break-words text-heading-sm">{movie.title}</Heading>
+        <p className="mb-2 break-words text-body-sm text-text-secondary">Genre: {movie.genre}</p>
+        <p className="mb-3 break-words text-body-sm text-text-secondary">Director: {movie.director}</p>
+        <p className="mb-6 line-clamp-3 break-words text-body text-text-muted">{movie.description}</p>
+        <div className="mt-auto flex flex-col gap-2">
+          <Link to={`/movies/${encodeURIComponent(movie.id)}`} className="button button-secondary"
+            aria-label={`View Details for ${movie.title}`}>View Details</Link>
+          <button type="button" className="button button-primary" onClick={toggleFavorite}
+            disabled={isPending} aria-busy={isPending} aria-pressed={isFavorite}
+            aria-describedby={error ? errorId : undefined}
+            aria-label={isPending ? `Updating... for ${movie.title}` : `${isFavorite ? "Remove from Favorites" : "Add to Favorites"}: ${movie.title}`}>
+            {isPending ? "Updating..." : isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+          </button>
+          {error && <p id={errorId} role="alert" className="text-body-sm text-text-secondary">{error}</p>}
+        </div>
+      </div>
+    </article>
+  );
+};
+
+MovieCard.propTypes = {
+  headingLevel: PropTypes.oneOf([2, 3]),
+  movie: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    genre: PropTypes.string.isRequired,
+    director: PropTypes.string.isRequired,
+    image: PropTypes.string,
+  }).isRequired,
+};
+
+// ===== FILE: src/components/movie-view/movie-view.jsx =====
+import React, { useId } from "react";
+import PropTypes from "prop-types";
+import { useParams, Link } from "react-router-dom";
+import { useFavorite } from "../../hooks/useFavorite";
+
+export const MovieView = ({ movies }) => {
+  const { movieId } = useParams();
+  const { isFavorite, isPending, error, toggleFavorite } = useFavorite(movieId);
+  const errorId = useId();
+  const movie = movies.find((item) => item.id === movieId);
+
+  if (!movie) {
+    return (
+      <section className="surface p-6 sm:p-8" aria-labelledby="movie-not-found-title">
+        <h1 id="movie-not-found-title" className="mb-6 text-heading-lg-mobile sm:text-heading-lg">Movie not found.</h1>
+        <Link to="/" className="button button-secondary">Back to Movies</Link>
+      </section>
+    );
+  }
+
+  return (
+    <article className="movie-detail" aria-labelledby="movie-detail-title">
+      <img className="movie-detail-poster" src={movie.image} alt={`${movie.title} poster`} />
+      <div className="min-w-0 p-6 md:p-8 lg:p-10">
+        <h1 id="movie-detail-title" className="mb-6 break-words text-heading-lg-mobile sm:text-heading-lg">{movie.title}</h1>
+        <p className="mb-8 whitespace-pre-line break-words text-body-lg text-text-secondary">{movie.description}</p>
+        <dl className="mb-8 space-y-4 text-body-lg">
+          <div>
+            <dt className="text-label text-text-muted">Genre</dt>
+            <dd className="mt-1 break-words">{movie.genre}</dd>
+          </div>
+          <div>
+            <dt className="text-label text-text-muted">Director</dt>
+            <dd className="mt-1 break-words">{movie.director}</dd>
+          </div>
+        </dl>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <button type="button" className="button button-primary" onClick={toggleFavorite}
+            disabled={isPending} aria-busy={isPending} aria-pressed={isFavorite}
+            aria-describedby={error ? errorId : undefined}>
+            {isPending ? "Updating..." : isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+          </button>
+          <Link to="/" className="button button-secondary">Back to Movies</Link>
+        </div>
+        {error && <p id={errorId} role="alert" className="mt-4 text-body text-text-secondary">{error}</p>}
+      </div>
+    </article>
+  );
+};
+
+MovieView.propTypes = {
+  movies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      genre: PropTypes.string.isRequired,
+      director: PropTypes.string.isRequired,
+      image: PropTypes.string,
+    })
+  ).isRequired,
+};
+
+// ===== FILE: src/components/navigation-bar/navigation-bar.jsx =====
+import React, { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
+import { Link, NavLink, useLocation } from "react-router-dom";
+
+export const NavigationBar = ({ user, onLoggedOut }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButton = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname, user]);
+
+  const closeMenu = () => setIsMenuOpen(false);
+  const navigationItems = user
+    ? [{ to: "/", label: "Home" }, { to: "/profile", label: "My Profile" }]
+    : [{ to: "/login", label: "Login" }, { to: "/signup", label: "Signup" }];
+
+  const renderLinks = () => (
+    <>
+      {navigationItems.map(({ to, label }) => (
+        <NavLink key={to} to={to} end className="nav-link" onClick={closeMenu}>
+          {label}
+        </NavLink>
+      ))}
+      {user && (
+        <button type="button" className="button button-secondary" onClick={() => {
+          closeMenu();
+          onLoggedOut();
+        }}>
+          Logout
+        </button>
+      )}
+    </>
+  );
+
+  return (
+    <>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <header className="border-b border-border-subtle bg-surface-1">
+        <nav aria-label="Main navigation" className="page-container" onKeyDown={(event) => {
+          if (event.key === "Escape" && isMenuOpen) {
+            event.preventDefault();
+            closeMenu();
+            menuButton.current?.focus();
+          }
+        }}>
+          <div className="flex min-h-[72px] items-center justify-between gap-4 py-3">
+            <Link to="/" onClick={closeMenu} className="inline-flex min-h-[44px] items-center rounded-control text-2xl font-extrabold tracking-tight text-primary">
+              myFlix
+            </Link>
+            <div className="hidden items-center gap-2 sm:flex">{renderLinks()}</div>
+            <button ref={menuButton} type="button" className="button button-secondary sm:hidden"
+              aria-controls="mobile-menu" aria-expanded={isMenuOpen}
+              aria-label={isMenuOpen ? "Close main menu" : "Open main menu"}
+              onClick={() => setIsMenuOpen((open) => !open)}>
+              <svg aria-hidden="true" focusable="false" className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                  d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+              </svg>
+            </button>
+          </div>
+          <div id="mobile-menu" hidden={!isMenuOpen} className="border-t border-border-subtle pb-4 pt-3 sm:hidden">
+            <div className="flex flex-col items-stretch gap-2">{renderLinks()}</div>
+          </div>
+        </nav>
+      </header>
+    </>
+  );
+};
+
+NavigationBar.propTypes = {
+  user: PropTypes.object,
+  onLoggedOut: PropTypes.func.isRequired,
+};
+
+// ===== FILE: src/components/profile-view/favorite-movies.jsx =====
+import React from "react";
+import PropTypes from "prop-types";
+import { MovieCard } from "../movie-card/movie-card";
+
+function FavoriteMovies({ favoriteMovies, isLoading = false, error = "", hasFavoriteIds = false }) {
+  return (
+    <section aria-labelledby="favorite-movies-title">
+      <h2 id="favorite-movies-title" className="mb-6 text-heading-md">Favorite Movies</h2>
+      {isLoading ? <p className="library-notice" role="status">Loading favorite movies...</p>
+        : error ? <p className="library-notice" role="alert">{error}</p>
+        : favoriteMovies.length === 0 ? <p className="library-notice" role="status">{hasFavoriteIds
+          ? "Your favorite movies are not available in the current catalog."
+          : "You haven't added any favorite movies yet."}</p>
+        : <div className="movie-grid">{favoriteMovies.map((movie) => <MovieCard key={movie.id} movie={movie} headingLevel={3} />)}</div>}
+    </section>
+  );
+}
+
+FavoriteMovies.propTypes = {
+  favoriteMovies: PropTypes.array.isRequired, isLoading: PropTypes.bool,
+  error: PropTypes.string, hasFavoriteIds: PropTypes.bool,
+};
+export default FavoriteMovies;
+
+// ===== FILE: src/components/profile-view/profile-view.jsx =====
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import PropTypes from "prop-types";
+import UserInfo from "./user-info";
+import FavoriteMovies from "./favorite-movies";
+import UpdateUser from "./update-user";
+import { api } from "../../api/client";
 import { useAppContext } from "../../contexts/AppContext";
+
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+};
+
+const emptyUser = {
+  Username: "",
+  Email: "",
+  Birthday: "",
+  FavoriteMovies: [],
+};
+
+export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }) => {
+  const { user, token, updateUser, logout, handleApiError } = useAppContext();
+  const currentUser = user || emptyUser;
+  const hasUser = Boolean(user);
+  const [username, setUsername] = useState(currentUser.Username);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(currentUser.Email || "");
+  const [birthday, setBirthday] = useState(
+    toDateInputValue(currentUser.Birthday || currentUser.BirthDate)
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const savingPending = useRef(false);
+  const deletionPending = useRef(false);
+  const dialog = useRef(null);
+  const cancelButton = useRef(null);
+  const deleteTrigger = useRef(null);
+
+  useEffect(() => {
+    if (!showModal || !hasUser) return;
+    const root = document.getElementById("root");
+    const wasInert = root?.hasAttribute("inert");
+    const previousOverflow = document.body.style.overflow;
+    root?.setAttribute("inert", "");
+    document.body.style.overflow = "hidden";
+    const focusable = () => Array.from(dialog.current?.querySelectorAll("button:not(:disabled)") || []);
+    const focusInside = () => (focusable()[0] || dialog.current)?.focus();
+    cancelButton.current?.focus();
+    const containFocus = (event) => {
+      if (!dialog.current?.contains(event.target)) focusInside();
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (!deletionPending.current) setShowModal(false);
+      }
+      if (event.key === "Tab") {
+        const controls = focusable();
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (!first) { event.preventDefault(); dialog.current?.focus(); }
+        else if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog.current)) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog.current)) {
+          event.preventDefault(); first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", containFocus);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", containFocus);
+      if (!wasInert) root?.removeAttribute("inert");
+      document.body.style.overflow = previousOverflow;
+      if (deleteTrigger.current?.isConnected) deleteTrigger.current.focus();
+    };
+  }, [showModal, hasUser]);
+
+  useEffect(() => {
+    if (showModal && isDeleting) dialog.current?.focus();
+  }, [showModal, isDeleting]);
+
+  useEffect(() => {
+    setUsername(currentUser.Username);
+    setPassword("");
+    setEmail(currentUser.Email || "");
+    setBirthday(toDateInputValue(currentUser.Birthday || currentUser.BirthDate));
+  }, [currentUser]);
+
+  const favoriteMovies = useMemo(
+    () => movies.filter((movie) => currentUser.FavoriteMovies?.includes(movie.id)),
+    [movies, currentUser.FavoriteMovies]
+  );
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (savingPending.current || deletionPending.current) return;
+    savingPending.current = true;
+    setSuccess("");
+    setError("");
+    setIsSaving(true);
+
+    const updates = { Username: username, Email: email, Birthday: birthday };
+    if (password) updates.Password = password;
+
+    try {
+      const updatedUser = await api.updateUser(currentUser.Username, updates, token);
+      if (updatedUser.Username !== currentUser.Username) {
+        logout("Your username was changed. Please sign in again.");
+        return;
+      }
+      updateUser(updatedUser);
+      setSuccess("Update successful.");
+    } catch (requestError) {
+      if (!handleApiError(requestError)) {
+        setError("Update unsuccessful. Please try again.");
+      }
+    } finally {
+      savingPending.current = false;
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (deletionPending.current || savingPending.current) return;
+    deletionPending.current = true;
+    setDeleteError("");
+    setIsDeleting(true);
+    try {
+      await api.deleteUser(currentUser.Username, token);
+      logout();
+    } catch (requestError) {
+      if (!handleApiError(requestError)) {
+        setDeleteError("Account deletion unsuccessful. Please try again.");
+      }
+    } finally {
+      deletionPending.current = false;
+      setIsDeleting(false);
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="space-y-8">
+      <h1 className="text-heading-lg-mobile sm:text-heading-lg">My Profile</h1>
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <UserInfo name={currentUser.Username} email={currentUser.Email}
+          birthday={toDateInputValue(currentUser.Birthday || currentUser.BirthDate)} />
+        <UpdateUser handleSubmit={handleSubmit} setUsername={setUsername} setPassword={setPassword}
+          setEmail={setEmail} setBirthday={setBirthday} username={username} password={password}
+          email={email} birthday={birthday} isSaving={isSaving} success={success} error={error} />
+      </div>
+      <FavoriteMovies favoriteMovies={favoriteMovies} isLoading={isLoadingMovies} error={movieError}
+        hasFavoriteIds={Boolean(currentUser.FavoriteMovies?.length)} />
+      <section className="profile-panel border-danger bg-danger-subtle" aria-labelledby="danger-zone-title">
+        <h2 id="danger-zone-title" className="mb-4 text-heading-md">Danger Zone</h2>
+        <p className="mb-6 text-text-secondary">Deleting your account permanently removes your account information and favorites.</p>
+        <button ref={deleteTrigger} type="button" className="button button-danger" disabled={isSaving}
+          onClick={() => { setDeleteError(""); setShowModal(true); }}>Delete Account</button>
+      </section>
+      {showModal && createPortal(
+        <div className="profile-dialog-backdrop">
+          <div className="absolute inset-0 bg-canvas opacity-90" aria-hidden="true" />
+          <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="delete-account-title"
+            aria-describedby={deleteError ? "delete-account-description delete-account-error" : "delete-account-description"}
+            aria-busy={isDeleting} tabIndex={-1}
+            className="surface-elevated relative max-h-[calc(100dvh-32px)] w-full max-w-md overflow-y-auto p-6 sm:p-8">
+            <h2 id="delete-account-title" className="mb-4 text-heading-md">Delete Account</h2>
+            <p id="delete-account-description" className="mb-6 text-text-secondary">Delete your account permanently? This action cannot be undone.</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button ref={cancelButton} type="button" className="button button-secondary" disabled={isDeleting}
+                onClick={() => setShowModal(false)}>Cancel</button>
+              <button type="button" className="button button-danger" onClick={handleDeleteUser} disabled={isDeleting}>
+                {isDeleting ? "Deleting..." : "Delete Account"}
+              </button>
+            </div>
+            {deleteError && <p id="delete-account-error" role="alert" className="mt-4 text-text-secondary">{deleteError}</p>}
+          </div>
+        </div>, document.body
+      )}
+    </div>
+  );
+};
+
+ProfileView.propTypes = {
+  movies: PropTypes.array.isRequired,
+  isLoadingMovies: PropTypes.bool,
+  movieError: PropTypes.string,
+};
+
+// ===== FILE: src/components/profile-view/update-user.jsx =====
+import React from "react";
+import PropTypes from "prop-types";
+
+function UpdateUser({
+  handleSubmit,
+  username,
+  setUsername,
+  password,
+  setPassword,
+  email,
+  setEmail,
+  birthday,
+  setBirthday,
+  isSaving,
+  success = "",
+  error = "",
+}) {
+  return (
+    <section className="profile-panel" aria-labelledby="update-account-title">
+      <h2 id="update-account-title" className="mb-6 text-heading-md">Update Account</h2>
+      <form onSubmit={handleSubmit} className="space-y-4" aria-busy={isSaving}
+        aria-describedby={error ? "profile-update-error" : undefined}>
+        <div>
+          <label htmlFor="profile-username" className="form-label">Username:</label>
+          <input id="profile-username" type="text" value={username} onChange={(event) => setUsername(event.target.value)}
+            className="form-input" required minLength="3" placeholder="Enter Username" autoComplete="username" />
+        </div>
+        <div>
+          <label htmlFor="profile-password" className="form-label">Password:</label>
+          <input id="profile-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)}
+            className="form-input" minLength="3" placeholder="Enter Password" autoComplete="new-password"
+            aria-describedby="profile-password-help" />
+          <p id="profile-password-help" className="mt-2 text-body-sm text-text-muted">Optional. Leave blank to keep your current password.</p>
+        </div>
+        <div>
+          <label htmlFor="profile-email" className="form-label">Email:</label>
+          <input id="profile-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)}
+            className="form-input" required placeholder="Enter Email" autoComplete="email" />
+        </div>
+        <div>
+          <label htmlFor="profile-birthday" className="form-label">Birthday:</label>
+          <input id="profile-birthday" type="date" value={birthday} onChange={(event) => setBirthday(event.target.value)}
+            className="form-input" required autoComplete="bday" />
+        </div>
+        <button type="submit" disabled={isSaving} className="button button-primary">
+          {isSaving ? "Saving..." : "Save Changes"}
+        </button>
+      </form>
+      {success && <p className="mt-4 text-text-secondary" role="status">{success}</p>}
+      {error && <p id="profile-update-error" className="mt-4 text-text-secondary" role="alert">{error}</p>}
+    </section>
+  );
+}
+
+UpdateUser.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  setUsername: PropTypes.func.isRequired,
+  password: PropTypes.string.isRequired,
+  setPassword: PropTypes.func.isRequired,
+  email: PropTypes.string.isRequired,
+  setEmail: PropTypes.func.isRequired,
+  birthday: PropTypes.string.isRequired,
+  setBirthday: PropTypes.func.isRequired,
+  isSaving: PropTypes.bool.isRequired,
+  success: PropTypes.string,
+  error: PropTypes.string,
+};
+
+export default UpdateUser;
+
+// ===== FILE: src/components/profile-view/user-info.jsx =====
+import React from "react";
+import PropTypes from "prop-types";
+
+function UserInfo({ email, name, birthday }) {
+  return (
+    <section className="profile-panel" aria-labelledby="account-information-title">
+      <h2 id="account-information-title" className="mb-6 text-heading-md">Account Information</h2>
+      <dl className="space-y-4">
+        <div><dt className="text-label text-text-muted">Username</dt><dd className="mt-1 break-words">{name}</dd></div>
+        {email && <div><dt className="text-label text-text-muted">Email</dt><dd className="mt-1 break-words">{email}</dd></div>}
+        {birthday && <div><dt className="text-label text-text-muted">Birthday</dt><dd className="mt-1"><time dateTime={birthday}>{birthday}</time></dd></div>}
+      </dl>
+    </section>
+  );
+}
+
+UserInfo.propTypes = { email: PropTypes.string, name: PropTypes.string.isRequired, birthday: PropTypes.string };
+export default UserInfo;
+
+// ===== FILE: src/components/signup-view/signup-view.jsx =====
+import React, { useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { api } from "../../api/client";
 
 // Component for the signup form
 export const SignupView = () => {
+  const usernameInput = useRef(null);
+  const confirmationInput = useRef(null);
+
   // State variables for form fields and success/failure messages
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -346,11 +783,10 @@ export const SignupView = () => {
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState("");
   const [success, setSuccess] = useState(false);
-  const [fail, setFail] = useState(false);
-  const { baseUrl } = useAppContext();
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Function to refresh the page
-  const refresh = () => window.location.reload(true);
+  const passwordMismatch = error === "The passwords do not match. Please try again.";
 
   // Function to handle form submission
   const handleSubmit = (event) => {
@@ -363,8 +799,7 @@ export const SignupView = () => {
 
     // Check if passwords match
     if (!checkPasswordConfirmation(password, confirmPassword)) {
-      alert("The passwords do not match. Please try again."); // Show error message if passwords don't match
-      window.location.reload(); // Reload the page
+      setError("The passwords do not match. Please try again.");
       return;
     }
 
@@ -376,850 +811,354 @@ export const SignupView = () => {
       Birthday: birthday,
     };
 
-    // Send POST request to the server
-    fetch(`${baseUrl}/users`, {
-      method: "POST",
-      body: JSON.stringify(data), // Convert data to JSON string
-      headers: {
-        "Content-Type": "application/json", // Set content type to JSON
-      },
-    }).then((response) => {
-      if (response.ok) {
-        setSuccess(true); // Set success state to true if response is OK
-      } else {
-        setFail(true); // Set fail state to true if response is not OK
-      }
-    });
+    setError("");
+    setIsSubmitting(true);
+    api
+      .signup(data)
+      .then(() => setSuccess(true))
+      .catch(() => setError("Registration unsuccessful. Please try again."))
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      {/* Container for centering the form vertically and horizontally */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
-      >
-        {/* Form element */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2" htmlFor="username">
-            Username:
-          </label>
-          {/* Username input field */}
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)} // Update username state on change
-            required
-            minLength="5"
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2" htmlFor="password">
-            Password:
-          </label>
-          {/* Password input field */}
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} // Update password state on change
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            className="block text-sm font-bold mb-2"
-            htmlFor="confirmPassword"
-          >
-            Confirm Password:
-          </label>
-          {/* Confirm password input field */}
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)} // Update confirmPassword state on change
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2" htmlFor="email">
-            Email:
-          </label>
-          {/* Email input field */}
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} // Update email state on change
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2" htmlFor="birthday">
-            Birthday:
-          </label>
-          {/* Birthday input field */}
-          <input
-            type="date"
-            id="birthday"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)} // Update birthday state on change
-            required
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <button
-          id="button"
-          type="submit"
-          className="text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Submit
-        </button>
-        {/* Submit button */}
-      </form>
-
-      <div className="mt-4 w-full max-w-md">
-        {/* Display success message if success state is true */}
+    <div className="auth-layout">
+      <section className="auth-panel" aria-labelledby="signup-title">
+        <h1 id="signup-title" className="mb-6 text-heading-lg-mobile sm:text-heading-lg">Signup</h1>
+        <form onSubmit={handleSubmit} aria-busy={isSubmitting}
+          aria-describedby={error ? "signup-feedback" : undefined} className="space-y-4">
+          <div>
+            <label className="form-label" htmlFor="signup-username">Username:</label>
+            <input ref={usernameInput} id="signup-username" name="username" type="text" value={username}
+              onChange={(event) => setUsername(event.target.value)} required
+              autoComplete="username" className="form-input" minLength="5" />
+          </div>
+          <div>
+            <label className="form-label" htmlFor="signup-password">Password:</label>
+            <input id="signup-password" name="password" type="password" value={password}
+              onChange={(event) => setPassword(event.target.value)} required
+              autoComplete="new-password" className="form-input"
+              aria-invalid={passwordMismatch || undefined} aria-describedby={passwordMismatch ? "signup-feedback" : undefined} />
+          </div>
+          <div>
+            <label className="form-label" htmlFor="signup-confirmPassword">Confirm Password:</label>
+            <input ref={confirmationInput} id="signup-confirmPassword" name="confirmPassword" type="password" value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)} required
+              autoComplete="new-password" className="form-input"
+              aria-invalid={passwordMismatch || undefined} aria-describedby={passwordMismatch ? "signup-feedback" : undefined} />
+          </div>
+          <div>
+            <label className="form-label" htmlFor="signup-email">Email:</label>
+            <input id="signup-email" name="email" type="email" value={email}
+              onChange={(event) => setEmail(event.target.value)} required
+              autoComplete="email" className="form-input" />
+          </div>
+          <div>
+            <label className="form-label" htmlFor="signup-birthday">Birthday:</label>
+            <input id="signup-birthday" name="birthday" type="date" value={birthday}
+              onChange={(event) => setBirthday(event.target.value)} required
+              autoComplete="bday" className="form-input" />
+          </div>
+          <button type="submit" disabled={isSubmitting} className="button button-primary w-full">
+            {isSubmitting ? "Creating account..." : "Signup"}
+          </button>
+        </form>
         {success && (
-          <div
-            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <p>Sign up successful. Account created.</p>
-            <Link to={"/login"}>
-              <button
-                id="button"
-                className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"
-              >
-                Login
-              </button>
-              {/* Link to login page with a button */}
-            </Link>
-          </div>
+          <p className="auth-notice mt-4" role="status">Sign up successful. Account created.</p>
         )}
-        {/* Display failure message if fail state is true */}
-        {fail && (
-          <div
-            className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <span className="block sm:inline">
-              Login unsuccessful. Please try again.
-            </span>
-            <span
-              className="absolute top-0 bottom-0 right-0 px-4 py-3"
-              onClick={() => refresh()}
-            >
-              <svg
-                className="fill-current h-6 w-6 text-yellow-500"
-                role="button"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <title>Close</title>
-                <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
+        {error && (
+          <div id="signup-feedback" className="auth-notice mt-4" role="alert">
+            <p className="min-w-0 flex-1">{error}</p>
+            <button type="button" aria-label="Dismiss message" className="button button-secondary shrink-0 px-3"
+              onClick={() => {
+                setError("");
+                (passwordMismatch ? confirmationInput : usernameInput).current?.focus();
+              }}>
+              <svg aria-hidden="true" focusable="false" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 6l12 12M6 18L18 6" strokeWidth="2" strokeLinecap="round" />
               </svg>
-            </span>
+            </button>
           </div>
         )}
-      </div>
+        <p className="mt-6 text-text-secondary">
+          Already have an account?{" "}
+          <Link to="/login" className="auth-link">Login</Link>
+        </p>
+      </section>
     </div>
   );
 };
 
-// ===== FILE: src/components/movie-card/movie-card.jsx =====
-/* eslint-disable react/prop-types */
-import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+// ===== FILE: src/api/client.js =====
+import { getApiBaseUrl } from "./config";
 
-export const MovieCard = ({ movie }) => {
-  return (
-    <div
-      id="card"
-      className="flex flex-col h-full bg-white shadow-md rounded-lg overflow-hidden"
-    >
-      <img
-        className="w-full h-64 object-contain"
-        src={movie.image}
-        alt={movie.title}
-      />
-      <div className="flex flex-col justify-between flex-grow p-4">
-        <div>
-          <h2 className="text-lg font-bold mb-2">{movie.title}</h2>
-          <p className="mb-2">{movie.description}</p>
-          <p className="mb-2">Genre: {movie.genre}</p>
-          <p className="mb-2">Director: {movie.director}</p>
-        </div>
-        <div className="text-center mt-4">
-          <Link to={`/movies/${encodeURIComponent(movie.id)}`}>
-            <button id="button" className="px-4 py-2 font-bold rounded">
-              Open
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+const buildUrl = (path) => `${getApiBaseUrl()}/${path.replace(/^\/+/, "")}`;
+
+const getErrorMessage = async (response) => {
+  try {
+    const data = await response.json();
+    return data.message || data.error || "The request could not be completed.";
+  } catch {
+    return "The request could not be completed.";
+  }
 };
 
-MovieCard.propTypes = {
-  movie: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    genre: PropTypes.string.isRequired,
-    director: PropTypes.string.isRequired,
-  }).isRequired,
+export const request = async (path, options = {}) => {
+  const { token, body, headers, ...fetchOptions } = options;
+  const response = await fetch(buildUrl(path), {
+    ...fetchOptions,
+    headers: {
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headers,
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+
+  if (!response.ok) {
+    throw new ApiError(await getErrorMessage(response), response.status);
+  }
+
+  if (response.status === 204) {
+    return undefined;
+  }
+
+  const contentLength = response.headers?.get?.("content-length");
+  if (contentLength === "0") {
+    return undefined;
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    return undefined;
+  }
 };
 
-// ===== FILE: src/components/movie-view/movie-view.jsx =====
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { useAppContext } from "../../contexts/AppContext";
+const encode = encodeURIComponent;
 
-export const MovieView = ({ movies, user, setUser, token }) => {
-  const { movieId } = useParams();
-  const [isFavorite, setIsFavorite] = useState(false);
-  // Base URL
-  const { baseUrl } = useAppContext();
-
-  useEffect(() => {
-    const isFavorited = user.FavoriteMovies.includes(movieId);
-    setIsFavorite(isFavorited);
-  }, []);
-
-  const removeFavorite = () => {
-    fetch(`${baseUrl}/users/${user.Username}/movies/${movieId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-      })
-      .then((data) => {
-        if (data) {
-          setIsFavorite(false);
-          localStorage.setItem("user", JSON.stringify(data));
-          setUser(data);
-        }
-      });
-  };
-
-  const addToFavorite = () => {
-    fetch(`${baseUrl}/users/${user.Username}/movies/${movieId}`, {
+export const api = {
+  login: (credentials) => request("login", { method: "POST", body: credentials }),
+  signup: (user) => request("users", { method: "POST", body: user }),
+  getMovies: (token, signal) => request("movies", { token, signal }),
+  updateUser: (username, updates, token) =>
+    request(`users/${encode(username)}`, { method: "PUT", body: updates, token }),
+  deleteUser: (username, token) =>
+    request(`users/${encode(username)}`, { method: "DELETE", token }),
+  addFavorite: (username, movieId, token) =>
+    request(`users/${encode(username)}/movies/${encode(movieId)}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-      })
-      .then((data) => {
-        if (data) {
-          setIsFavorite(true);
-          localStorage.setItem("user", JSON.stringify(data));
-          setUser(data);
-        }
-      });
-  };
-
-  const movie = movies.find((m) => m.id === movieId);
-
-  return (
-    <div className="flex items-center justify-center min-h-screen py-4">
-      <div className="flex flex-col lg:flex-row w-11/12 lg:w-4/5 bg-white shadow-md rounded-lg overflow-hidden">
-        {/* Left side image */}
-        <img
-          className="w-full lg:w-1/2 object-cover"
-          src={movie.image}
-          alt={movie.title}
-        />
-        {/* Right side content */}
-        <div className="flex flex-col justify-between w-full lg:w-1/2 p-6">
-          <div>
-            <div className="font-bold text-xl lg:text-2xl mb-2">
-              {movie.title}
-            </div>
-            <div className="mb-4">
-              <p className="text-base lg:text-lg">{movie.description}</p>
-            </div>
-            <div className="mb-4">
-              <p className="text-base lg:text-lg">Genre: {movie.genre}</p>
-              <p className="text-base lg:text-lg">Director: {movie.director}</p>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4">
-            {isFavorite ? (
-              <button
-                className="px-4 py-2 font-bold rounded text-sm lg:text-base"
-                onClick={removeFavorite}
-              >
-                Remove from favorites
-              </button>
-            ) : (
-              <button
-                className="px-4 py-2 font-bold rounded text-sm lg:text-base"
-                onClick={addToFavorite}
-              >
-                Add to favorites
-              </button>
-            )}
-            <Link to={`/`} className="inline-block">
-              <button className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded text-sm lg:text-base">
-                Back
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ===== FILE: src/components/navigation-bar/navigation-bar.jsx =====
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-export const NavigationBar = ({ user, onLoggedOut }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  return (
-    <nav>
-      <div className="max-w-7xl mx-auto px-2">
-        <div className="relative flex items-center justify-between h-16">
-          {/* Left-aligned logo */}
-          <div className="flex items-center flex-shrink-0">
-            <Link to="/" className="text-xl font-bold">
-              <h1 className="text-4xl text-red-400">MyFlix</h1>
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-gray-200 focus:outline-none focus:bg-gray-200 focus:text-gray-900"
-              aria-controls="mobile-menu"
-              aria-expanded={isMenuOpen ? "true" : "false"}
-              onClick={toggleMenu}
-            >
-              <span className="sr-only">Open main menu</span>
-
-              {/* Hamburger icon */}
-              <svg
-                className={`h-6 w-6 ${isMenuOpen ? "hidden" : "block"}`}
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-
-              {/* Close icon */}
-              <svg
-                className={`h-6 w-6 ${isMenuOpen ? "block" : "hidden"}`}
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-          </div>
-
-          {/* Right-aligned navigation links */}
-          <div className="hidden sm:flex sm:items-center sm:justify-end sm:space-x-4">
-            {!user && (
-              <>
-                <Link
-                  to="/login"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
-                  id="navlink"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
-                  id="navlink"
-                >
-                  Signup
-                </Link>
-              </>
-            )}
-            {user && (
-              <>
-                <Link
-                  to="/"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
-                  id="navlink"
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/profile"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
-                  id="navlink"
-                >
-                  My Profile
-                </Link>
-                <a
-                  onClick={onLoggedOut}
-                  className="px-3 py-2 rounded-md text-sm font-medium"
-                  id="navlink"
-                >
-                  Logout
-                </a>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-      {/* Mobile menu, toggle with Tailwind's responsive utilities */}
-      <div
-        className={`${isMenuOpen ? "block" : "hidden"} sm:hidden bg-gray-100`}
-        id="mobile-menu"
-      >
-        <div className="px-2 pt-2 pb-3 space-y-1">
-          {!user && (
-            <>
-              <Link
-                to="/login"
-                className="block px-3 py-2 rounded-md text-base font-medium"
-                id="navlink"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="block px-3 py-2 rounded-md text-base font-medium"
-                id="navlink"
-              >
-                Signup
-              </Link>
-            </>
-          )}
-          {user && (
-            <>
-              <Link
-                to="/"
-                className="block px-3 py-2 rounded-md text-base font-medium"
-                id="navlink"
-              >
-                Home
-              </Link>
-              <Link
-                to="/profile"
-                className="block px-3 py-2 rounded-md text-base font-medium"
-                id="navlink"
-              >
-                My Profile
-              </Link>
-              <button
-                onClick={onLoggedOut}
-                className="block px-3 py-2 rounded-md text-base font-medium"
-                id="navlink"
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
-  );
-};
-
-// ===== FILE: src/components/profile-view/favorite-movies.jsx =====
-import React from "react";
-import { Link } from "react-router-dom";
-
-function FavoriteMovies({ favoriteMovies }) {
-  return (
-    <>
-      <h4 className="text-lg font-bold mb-4">Your Favorite Movies:</h4>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {favoriteMovies.map((movie) => (
-          <div key={movie.id} className="fav-movie">
-            <Link to={`/movies/${movie.id}`}>
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="w-full rounded-lg shadow-md hover:shadow-lg transition duration-300"
-              />
-              <h1 className="text-center mt-2">{movie.title}</h1>
-            </Link>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-export default FavoriteMovies;
-
-// ===== FILE: src/components/profile-view/profile-view.jsx =====
-/* eslint-disable react/prop-types */
-import React, { useState } from "react";
-import UserInfo from "./user-info";
-import FavoriteMovies from "./favorite-movies";
-import UpdateUser from "./update-user";
-import { useAppContext } from "../../contexts/AppContext";
-
-export const ProfileView = ({ user, token, setUser, movies }) => {
-  // Form states
-  const [username, setUsername] = useState(user.Username);
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(user.Email);
-  const [birthday, setBirthday] = useState("user.BirthDate");
-  // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [fail, setFail] = useState(false);
-  // Base URL
-  const { baseUrl } = useAppContext();
-
-  const favoriteMovies = movies.filter((movie) =>
-    user.FavoriteMovies.includes(movie.id)
-  );
-
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const data = {
-      Username: username,
-      Password: password,
-      Email: email,
-      BirthDate: birthday,
-    };
-
-    fetch(`${baseUrl}/users/${user.Username}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          setFail(true);
-        }
-      })
-      .then((data) => {
-        if (data) {
-          localStorage.setItem("user", JSON.stringify(data));
-          setUser(data);
-          setSuccess(true);
-          resetFormFields();
-        }
-      });
-  };
-
-  const resetFormFields = () => {
-    setUsername(user.Username);
-    setPassword("");
-    setEmail(user.Email);
-    setBirthday("");
-  };
-
-  const handleDeleteUser = () => {
-    fetch(`${baseUrl}/users/${user.Username}`, {
+      token,
+    }),
+  removeFavorite: (username, movieId, token) =>
+    request(`users/${encode(username)}/movies/${encode(movieId)}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((response) => {
-      if (response.ok) {
-        setUser(null);
-        localStorage.clear();
-      }
-    });
-  };
-
-  return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <div className="user-containers">
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <UserInfo name={user.Username} email={user.Email} />
-          </div>
-        </div>
-        <div className="user-containers">
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <UpdateUser
-              handleSubmit={handleSubmit}
-              setUsername={setUsername}
-              setPassword={setPassword}
-              setEmail={setEmail}
-              setBirthday={setBirthday}
-              username={username}
-              password={password}
-              email={email}
-              birthday={birthday}
-            />
-          </div>
-          <div>
-            {success && (
-              <div className="mt-4">
-                <div
-                  className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                  role="alert"
-                >
-                  <span className="block sm:inline">Update successful.</span>
-                  <span
-                    className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                    onClick={() => {
-                      setSuccess(false);
-                      resetFormFields();
-                    }}
-                  >
-                    <svg
-                      className="fill-current h-6 w-6 text-green-500"
-                      role="button"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <title>Close</title>
-                      <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            )}
-            {fail && (
-              <div className="mt-4">
-                <div
-                  className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-                  role="alert"
-                >
-                  <span className="block sm:inline">Update unsuccessful.</span>
-                  <span
-                    className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                    onClick={() => setFail(false)}
-                  >
-                    <svg
-                      className="fill-current h-6 w-6 text-yellow-500"
-                      role="button"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <title>Close</title>
-                      <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-        <FavoriteMovies favoriteMovies={favoriteMovies} />
-      </div>
-
-      <button
-        id="button"
-        className=" font-bold py-2 px-4 rounded"
-        onClick={handleShowModal}
-      >
-        Delete account
-      </button>
-
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center">
-          <div className="absolute inset-0 bg-gray-900 opacity-75"></div>
-          <div className="bg-white p-8 rounded-lg max-w-md w-full z-50">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Delete account</h3>
-            </div>
-            <p className="mb-4">Are you sure?</p>
-            <div className="flex justify-end">
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
-                onClick={handleDeleteUser}
-              >
-                Yes
-              </button>
-              <button
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"
-                onClick={handleCloseModal}
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+      token,
+    }),
 };
 
-// ===== FILE: src/components/profile-view/update-user.jsx =====
-import React from "react";
+// ===== FILE: src/api/config.js =====
+export const getApiBaseUrl = () => {
+  const baseUrl = process.env.MYFLIX_API_BASE_URL?.trim();
 
-function UpdateUser({
-  handleSubmit,
-  username,
-  setUsername,
-  password,
-  setPassword,
-  email,
-  setEmail,
-  birthday,
-  setBirthday,
-}) {
-  return (
-    <div>
-      <h3 className="text-lg font-bold mb-4">Update Your Details</h3>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="username" className="block text-sm font-medium">
-            Username:
-          </label>
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            minLength="3"
-            placeholder="Enter Username"
-          />
-        </div>
+  if (!baseUrl) {
+    throw new Error(
+      "MYFLIX_API_BASE_URL is required. Set it in your environment before starting the app."
+    );
+  }
 
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password:
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            minLength="3"
-            placeholder="Enter Password"
-          />
-        </div>
+  return baseUrl.replace(/\/+$/, "");
+};
 
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email:
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            placeholder="Enter Email"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="birthday" className="block text-sm font-medium">
-            Birthday:
-          </label>
-          <input
-            id="birthday"
-            type="date"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
-
-        <button
-          id="button"
-          type="submit"
-          className="font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          Save changes
-        </button>
-      </form>
-    </div>
-  );
-}
-
-export default UpdateUser;
-
-// ===== FILE: src/components/profile-view/user-info.jsx =====
-import React from "react";
-
-function UserInfo({ email, name }) {
-  return (
-    <div>
-      <h3 className="text-lg font-bold mb-2">Your Details</h3>
-      <p className="mb-1">Name: {name}</p>
-      <p className="mb-1">Email: {email}</p>
-    </div>
-  );
-}
-
-export default UserInfo;
-
-// ===== FILE: src/contexts/AppContext.js =====
-import React, { createContext, useContext } from "react";
+// ===== FILE: src/contexts/AppContext.jsx =====
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+import PropTypes from "prop-types";
+import { ApiError } from "../api/client";
 
 // Create a context with a default value (null in this case)
 const AppContext = createContext(null);
 
 // Custom hook to use the AppContext
 export const useAppContext = () => {
-  return useContext(AppContext);
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("useAppContext must be used within AppProvider");
+  }
+
+  return context;
+};
+
+const storageKeys = ["user", "token"];
+
+const clearStoredAuth = () => {
+  storageKeys.forEach((key) => localStorage.removeItem(key));
+};
+
+const readStoredAuth = () => {
+  const token = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user");
+
+  if (!token || !storedUser) {
+    clearStoredAuth();
+    return { user: null, token: null };
+  }
+
+  try {
+    const user = JSON.parse(storedUser);
+    if (!user || typeof user !== "object" || !user.Username) {
+      throw new Error("Invalid stored user");
+    }
+    return { user, token };
+  } catch {
+    clearStoredAuth();
+    return { user: null, token: null };
+  }
 };
 
 // Create a provider component
 export const AppProvider = ({ children }) => {
-  // Define the baseUrl
-  const baseUrl = "https://movie-api-mreb.onrender.com";
+  const [{ user, token }, setAuth] = useState(readStoredAuth);
+  const [sessionNotice, setSessionNotice] = useState("");
+
+  const persistAuth = useCallback((nextUser, nextToken = token) => {
+    localStorage.setItem("user", JSON.stringify(nextUser));
+    localStorage.setItem("token", nextToken);
+    setAuth({ user: nextUser, token: nextToken });
+  }, [token]);
+
+  const login = useCallback((nextUser, nextToken) => {
+    persistAuth(nextUser, nextToken);
+    setSessionNotice("");
+  }, [persistAuth]);
+
+  const updateUser = useCallback(
+    (nextUser) => persistAuth(nextUser),
+    [persistAuth]
+  );
+
+  const logout = useCallback((notice = "") => {
+    clearStoredAuth();
+    setAuth({ user: null, token: null });
+    setSessionNotice(notice);
+  }, []);
+
+  const clearSessionNotice = useCallback(() => setSessionNotice(""), []);
+
+  const handleApiError = useCallback((error) => {
+    if (error instanceof ApiError && [401, 403].includes(error.status)) {
+      logout("Your session has expired. Please sign in again.");
+      return true;
+    }
+    return false;
+  }, [logout]);
+
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      sessionNotice,
+      login,
+      updateUser,
+      logout,
+      handleApiError,
+      clearSessionNotice,
+    }),
+    [
+      user,
+      token,
+      sessionNotice,
+      login,
+      updateUser,
+      logout,
+      handleApiError,
+      clearSessionNotice,
+    ]
+  );
 
   return (
-    <AppContext.Provider value={{ baseUrl }}>{children}</AppContext.Provider>
+    <AppContext.Provider value={value}>{children}</AppContext.Provider>
   );
 };
+
+AppProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+// ===== FILE: src/hooks/useFavorite.js =====
+import { useRef, useState } from "react";
+import { api } from "../api/client";
+import { useAppContext } from "../contexts/AppContext";
+
+// Favorite membership remains owned by the returned user in AppContext.
+export const useFavorite = (movieId) => {
+  const { user, token, updateUser, handleApiError } = useAppContext();
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState("");
+  const requestPending = useRef(false);
+  const isFavorite = user?.FavoriteMovies?.includes(movieId) || false;
+
+  const toggleFavorite = async () => {
+    if (requestPending.current || !user || !token) return;
+    requestPending.current = true;
+    setIsPending(true);
+    setError("");
+    try {
+      const updatedUser = isFavorite
+        ? await api.removeFavorite(user.Username, movieId, token)
+        : await api.addFavorite(user.Username, movieId, token);
+      updateUser(updatedUser);
+    } catch (requestError) {
+      if (!handleApiError(requestError)) {
+        setError("Favorites could not be updated. Please try again.");
+      }
+    } finally {
+      requestPending.current = false;
+      setIsPending(false);
+    }
+  };
+
+  return { isFavorite, isPending, error, toggleFavorite };
+};
+
+// ===== FILE: src/index.jsx =====
+import React from "react";
+import { createRoot } from "react-dom/client";
+import MainView from "./components/main-view/main-view";
+import "./index.css";
+import { AppProvider } from "./contexts/AppContext";
+import { getApiBaseUrl } from "./api/config";
+
+// Surface a missing public API configuration as soon as the application starts.
+getApiBaseUrl();
+
+// Main component (will eventually use all the others)
+const MyFlixApplication = () => {
+  return (
+    <AppProvider>
+      <div className="app-shell">
+        <MainView />
+      </div>
+    </AppProvider>
+  );
+};
+
+// Finds the root of your app
+const container = document.querySelector("#root");
+const root = createRoot(container);
+
+// Tells React to render your app in the root DOM element
+root.render(<MyFlixApplication />);

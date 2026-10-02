@@ -1,32 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { MovieCard } from "../movie-card/movie-card";
 
-function FavoriteMovies({ favoriteMovies }) {
+function FavoriteMovies({ favoriteMovies, isLoading = false, error = "", hasFavoriteIds = false }) {
   return (
-    <>
-      <h4 className="text-lg font-bold mb-4">Your Favorite Movies:</h4>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {favoriteMovies.map((movie) => (
-          <div key={movie.id} className="fav-movie">
-            <Link to={`/movies/${movie.id}`}>
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="w-full rounded-lg shadow-md hover:shadow-lg transition duration-300"
-              />
-              <h1 className="text-center mt-2">{movie.title}</h1>
-            </Link>
-          </div>
-        ))}
-      </div>
-    </>
+    <section aria-labelledby="favorite-movies-title">
+      <h2 id="favorite-movies-title" className="mb-6 text-heading-md">Favorite Movies</h2>
+      {isLoading ? <p className="library-notice" role="status">Loading favorite movies...</p>
+        : error ? <p className="library-notice" role="alert">{error}</p>
+        : favoriteMovies.length === 0 ? <p className="library-notice" role="status">{hasFavoriteIds
+          ? "Your favorite movies are not available in the current catalog."
+          : "You haven't added any favorite movies yet."}</p>
+        : <div className="movie-grid">{favoriteMovies.map((movie) => <MovieCard key={movie.id} movie={movie} headingLevel={3} />)}</div>}
+    </section>
   );
 }
 
 FavoriteMovies.propTypes = {
-  favoriteMovies: PropTypes.array.isRequired,
+  favoriteMovies: PropTypes.array.isRequired, isLoading: PropTypes.bool,
+  error: PropTypes.string, hasFavoriteIds: PropTypes.bool,
 };
-
 export default FavoriteMovies;

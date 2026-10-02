@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { AppProvider } from "../../contexts/AppContext";
@@ -61,7 +61,7 @@ describe("MainView", () => {
       })
     );
 
-    await user.type(screen.getByPlaceholderText("Search..."), "amelie");
+    await user.type(screen.getByRole("searchbox", { name: "Search movies" }), "amelie");
     expect(screen.queryByText("The Matrix")).not.toBeInTheDocument();
     expect(screen.getByText("Amelie")).toBeInTheDocument();
 
@@ -70,4 +70,36 @@ describe("MainView", () => {
     expect(localStorage.getItem("user")).toBeNull();
     expect(localStorage.getItem("token")).toBeNull();
   });
+  it("shows no search results without confusing them with an empty catalog", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("user", JSON.stringify({ Username: "Ada", FavoriteMovies: [] }));
+    localStorage.setItem("token", "test-token");
+    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => movies });
+    render(<AppProvider><MainView /></AppProvider>);
+    expect(await screen.findByRole("heading", { name: "The Matrix" })).toBeInTheDocument();
+    const search = screen.getByRole("searchbox", { name: "Search movies" });
+    expect(screen.getAllByRole("searchbox")).toHaveLength(1);
+    await user.type(search, "not-a-movie");
+    expect(screen.getByRole("status")).toHaveTextContent("No movies match your search");
+    expect(screen.queryByText("No movies are available.")).not.toBeInTheDocument();
+    await user.clear(search);
+    await user.type(search, "MATRIX");
+    expect(screen.getByRole("heading", { name: "The Matrix" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Amelie" })).not.toBeInTheDocument();
+    expect(globalThis.fetch).toHaveBeenCalledOnce();
+  });
+
+  it("distinguishes loading from a successfully loaded empty catalog", async () => {
+    localStorage.setItem("user", JSON.stringify({ Username: "Ada", FavoriteMovies: [] }));
+    localStorage.setItem("token", "test-token");
+    let finishRequest;
+    globalThis.fetch = vi.fn(() => new Promise((resolve) => { finishRequest = resolve; }));
+    render(<AppProvider><MainView /></AppProvider>);
+    expect(screen.getByRole("status")).toHaveTextContent("Loading movies...");
+    expect(screen.queryByText("No movies are available.")).not.toBeInTheDocument();
+    await act(async () => finishRequest({ ok: true, json: async () => [] }));
+    expect(screen.getByRole("status")).toHaveTextContent("No movies are available.");
+    expect(screen.queryByText(/No movies match/)).not.toBeInTheDocument();
+  });
+
 });

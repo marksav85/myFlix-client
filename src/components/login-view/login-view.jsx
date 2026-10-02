@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext";
 import { api } from "../../api/client";
 
 export const LoginView = () => {
   // State variables to manage the input values for username and password
+  const usernameInput = useRef(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,90 +39,47 @@ export const LoginView = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      {/* Center the login form vertically and horizontally */}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        {/* Container for the form with background, padding, rounded corners, and shadow */}
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        {/* Form title */}
-        <form onSubmit={handleLogin}>
-          {/* Form element with an onSubmit handler */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold mb-2" htmlFor="username">
-              Username:
-            </label>
-            {/* Username input field */}
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)} // Update the username state on change
-              required
-              minLength="3"
-              className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-              autoComplete="username"
-            />
+    <div className="auth-layout">
+      <section className="auth-panel" aria-labelledby="login-title">
+        <h1 id="login-title" className="mb-6 text-heading-lg-mobile sm:text-heading-lg">Login</h1>
+        <form onSubmit={handleLogin} aria-busy={isSubmitting}
+          aria-describedby={(error || sessionNotice) ? "login-feedback" : undefined} className="space-y-4">
+          <div>
+            <label className="form-label" htmlFor="login-username">Username:</label>
+            <input ref={usernameInput} id="login-username" name="username" type="text" value={username}
+              onChange={(event) => setUsername(event.target.value)} required
+              autoComplete="username" className="form-input" minLength="3" />
           </div>
-          <div className="mb-6">
-            <label className="block text-sm font-bold mb-2" htmlFor="password">
-              Password:
-            </label>
-            {/* Password input field */}
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} // Update the password state on change
-              required
-              className="shadow appearance-none border rounded w-full py-2 px-3 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              autoComplete="current-password"
-            />
+          <div>
+            <label className="form-label" htmlFor="login-password">Password:</label>
+            <input id="login-password" name="password" type="password" value={password}
+              onChange={(event) => setPassword(event.target.value)} required
+              autoComplete="current-password" className="form-input" />
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              id="button"
-              type="submit"
-              disabled={isSubmitting}
-              className=" text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              {isSubmitting ? "Signing in..." : "Submit"}
-            </button>
-            {/* Submit button */}
-          </div>
+          <button type="submit" disabled={isSubmitting} className="button button-primary w-full">
+            {isSubmitting ? "Signing in..." : "Login"}
+          </button>
         </form>
-
-        {/* Container for the alert message */}
-        <div className="mt-4 w-full max-w-md">
-          {/* Display failure message if fail state is true */}
-          {(error || sessionNotice) && (
-            <div
-              className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-              role="alert"
-            >
-              <span className="block sm:inline">{error || sessionNotice}</span>
-              <button
-                type="button"
-                aria-label="Dismiss message"
-                className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                onClick={() => {
-                  setError("");
-                  clearSessionNotice();
-                }}
-              >
-                <svg
-                  className="fill-current h-6 w-6 text-yellow-500"
-                  role="button"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <title>Close</title>
-                  <path d="M14.348 5.652a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586l4.707-4.707a1 1 0 0 1 1.414 0l.354.354a1 1 0 0 1 0 1.414L11.414 12l4.702 4.707a1 1 0 0 1 0 1.414l-.354.354a1 1 0 0 1-1.414 0L10 14.414 5.297 19.121a1 1 0 0 1-1.414 0l-.354-.354a1 1 0 0 1 0-1.414L8.586 12 3.884 7.293a1 1 0 0 1 0-1.414l.354-.354a1 1 0 0 1 1.414 0L10 9.586z" />
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+        {(error || sessionNotice) && (
+          <div id="login-feedback" className="auth-notice mt-4" role="alert">
+            <p className="min-w-0 flex-1">{error || sessionNotice}</p>
+            <button type="button" aria-label="Dismiss message" className="button button-secondary shrink-0 px-3"
+              onClick={() => {
+                setError("");
+                clearSessionNotice();
+                usernameInput.current?.focus();
+              }}>
+              <svg aria-hidden="true" focusable="false" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 6l12 12M6 18L18 6" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        )}
+        <p className="mt-6 text-text-secondary">
+          Need an account?{" "}
+          <Link to="/signup" className="auth-link">Signup</Link>
+        </p>
+      </section>
     </div>
   );
 };

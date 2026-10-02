@@ -5,7 +5,7 @@ import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import { api } from "../../api/client";
 import { useAppContext } from "../../contexts/AppContext";
 
@@ -64,6 +64,10 @@ const MainView = () => {
     return () => controller.abort();
   }, [token, handleApiError]);
 
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <BrowserRouter>
       <NavigationBar
@@ -71,6 +75,7 @@ const MainView = () => {
         onLoggedOut={logout}
       />
 
+      <main id="main-content" tabIndex={-1} className="page-container py-6">
       <Routes>
         <Route
           path="/signup"
@@ -98,10 +103,7 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : (
-                <ProfileView
-                  user={user}
-                  movies={movies}
-                />
+                <ProfileView movies={movies} isLoadingMovies={isLoading} movieError={movieError} />
               )}
             </>
           }
@@ -114,13 +116,14 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : isLoading ? (
-                <div className="p-4">Loading movies...</div>
+                <p className="library-notice" role="status">Loading movies...</p>
               ) : movieError ? (
-                <div className="p-4" role="alert">{movieError}</div>
+                <div className="library-notice" role="alert">
+                  <p>{movieError}</p>
+                  <Link to="/" className="button button-secondary mt-4">Back to Movies</Link>
+                </div>
               ) : (
-                <MovieView
-                  movies={movies}
-                />
+                <MovieView movies={movies} />
               )}
             </>
           }
@@ -133,48 +136,34 @@ const MainView = () => {
               {!user ? (
                 <Navigate to="/login" replace />
               ) : (
-                <div className="flex items-center justify-center">
-                  <div className="w-full sm:w-9/10 lg:w-4/5 mx-auto flex flex-col items-center justify-center">
-                    <div id="searchbar" className="mt-1 mb-1 w-full">
-                      <input
-                        type="text"
-                        placeholder="Search..."
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                      />
-                    </div>
-                    {isLoading ? (
-                      <div className="w-full" role="status">Loading movies...</div>
-                    ) : movieError ? (
-                      <div className="w-full" role="alert">{movieError}</div>
-                    ) : movies.length === 0 ? (
-                      <div className="w-full">No movies are available.</div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
-                        {movies
-                          .filter((movie) =>
-                            movie.title
-                              .toLowerCase()
-                              .includes(filter.toLowerCase())
-                          )
-                          .map((movie) => (
-                            <div
-                              key={movie.id}
-                              className="bg-white shadow-md rounded-lg overflow-hidden"
-                            >
-                              <MovieCard movie={movie} />
-                            </div>
-                          ))}
-                      </div>
-                    )}
+                <section aria-labelledby="movie-library-title">
+                  <h1 id="movie-library-title" className="text-heading-lg-mobile sm:text-heading-lg">Movie Library</h1>
+                  <div role="search" aria-label="Movie library" className="my-6 max-w-md">
+                    <label htmlFor="movie-search" className="form-label">Search movies</label>
+                    <input id="movie-search" type="search" placeholder="Search by title..."
+                      value={filter} onChange={(event) => setFilter(event.target.value)}
+                      className="form-input" />
                   </div>
-                </div>
+                  {isLoading ? (
+                    <p className="library-notice" role="status">Loading movies...</p>
+                  ) : movieError ? (
+                    <p className="library-notice" role="alert">{movieError}</p>
+                  ) : movies.length === 0 ? (
+                    <p className="library-notice" role="status">No movies are available.</p>
+                  ) : filteredMovies.length === 0 ? (
+                    <p className="library-notice" role="status">No movies match your search. Try another title.</p>
+                  ) : (
+                    <div className="movie-grid">
+                      {filteredMovies.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
+                    </div>
+                  )}
+                </section>
               )}
             </>
           }
         />
       </Routes>
+      </main>
     </BrowserRouter>
   );
 };

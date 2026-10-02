@@ -1,16 +1,16 @@
 {
-  "packId": "2026-09-26T20:00:43Z",
+  "packId": "2026-10-02T14:29:24Z",
   "runMode": "controller",
-  "generatedAt": "2026-09-26T20:00:43Z",
-  "verifiedAt": "2026-09-26T20:00:43Z",
+  "generatedAt": "2026-10-02T14:29:24Z",
+  "verifiedAt": "2026-10-02T14:29:24Z",
   "repoBranch": "refactor/portfolio-update",
-  "repoHead": "1b322bf7b1b34b8150c5764ce936eb75351c22e1",
+  "repoHead": "67e0f171100ea2f2c27c216facea6bfd661ac531",
   "scopeHeads": {
-    "docsHead": null,
-    "srcHead": "2e822f15cba467b514160db25130df778a20c00e",
-    "depsHead": "2e822f15cba467b514160db25130df778a20c00e"
+    "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e",
+    "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531",
+    "depsHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
   },
-  "dirtyWorkingTree": false,
+  "dirtyWorkingTree": true,
   "stalenessSummary": {
     "counts": {
       "flagged": 6,
@@ -24,78 +24,119 @@
       "src": true,
       "deps": true
     },
-    "reason": "No previous artifact manifest or artifact pack was present; the full pack was generated from the current repository baseline."
+    "reason": "Previous baseline predates committed API/session hardening and dependency modernization. Documentation had no prior scope baseline; current uncommitted design/source/public changes and README updates were explicitly inspected. Full regeneration authorized in the user request."
   },
+  "warnings": [
+    "Uncommitted changes detected; staleness detection uses commits and may miss local changes. This regeneration reads the current working tree, including untracked implementation/design files.",
+    "Commit scope heads do not identify the uncommitted redesign; snapshot bytes and artifact hashes capture the inspected working-tree content.",
+    "PROJECT_OVERVIEW excludes system directories and generated caches; .env is listed by name only and its contents are never copied."
+  ],
   "artifacts": [
     {
       "artifactId": "SRC_TREE",
       "path": "docs/0-ai/artifacts/SRC_TREE.json",
-      "generatedAt": "2026-09-26T20:00:43Z",
-      "verifiedAt": "2026-09-26T20:00:43Z",
+      "generatedAt": "2026-10-02T14:29:24Z",
+      "verifiedAt": "2026-10-02T14:29:24Z",
       "status": "regenerated",
-      "sizeBytes": 5485,
-      "contentHash": "b3cc8e0615c3ad19b45b39af0a812de3bfbe3427ce8d0242dfb421d06cfc4f65",
-      "dependsOnScopes": ["src"],
-      "scopeHeadsAtVerify": {"srcHead": "2e822f15cba467b514160db25130df778a20c00e"},
-      "warnings": []
+      "dependsOnScopes": [
+        "src"
+      ],
+      "scopeHeadsAtVerify": {
+        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+      },
+      "sizeBytes": 7984,
+      "contentHash": "a94b5945e82afbd606b9d3c2d39c72ab63f9b8979acefd43df76c354fbc899d7",
+      "warnings": [
+        "Canonical tree excludes test/spec/story files, CSS, HTML, and static assets; src/test/setup.js remains included as a JavaScript support file."
+      ]
     },
     {
       "artifactId": "DOCS_TREE",
       "path": "docs/0-ai/artifacts/DOCS_TREE.json",
-      "generatedAt": "2026-09-26T20:00:43Z",
-      "verifiedAt": "2026-09-26T20:00:43Z",
+      "generatedAt": "2026-10-02T14:29:24Z",
+      "verifiedAt": "2026-10-02T14:29:24Z",
       "status": "regenerated",
-      "sizeBytes": 1942,
-      "contentHash": "67fb6eff50ded3cc80bb99039c676a63c3b3e871cbd076b6b75de9066c76b5c1",
-      "dependsOnScopes": ["docs"],
-      "scopeHeadsAtVerify": {"docsHead": null},
-      "warnings": ["The docs scope did not exist before this baseline generation."]
+      "dependsOnScopes": [
+        "docs"
+      ],
+      "scopeHeadsAtVerify": {
+        "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e"
+      },
+      "sizeBytes": 3517,
+      "contentHash": "0d50ee507a9d012f66fd445ddb037a8f5d6302ea59f82e66bea3e5466ba3f11b",
+      "warnings": [
+        "Excluded documentation media: docs/design/assets/myflix-icon-source.png (documentation-only reference artwork)."
+      ]
     },
     {
       "artifactId": "PROJECT_OVERVIEW",
       "path": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
-      "generatedAt": "2026-09-26T20:00:43Z",
-      "verifiedAt": "2026-09-26T20:00:43Z",
+      "generatedAt": "2026-10-02T14:29:24Z",
+      "verifiedAt": "2026-10-02T14:29:24Z",
       "status": "regenerated",
-      "sizeBytes": 3073,
-      "contentHash": "f82f3bdfb893fa91a252cbac4a77421907b6f105419c352d1285029c210e4a51",
-      "dependsOnScopes": ["docs", "deps"],
-      "scopeHeadsAtVerify": {"docsHead": null, "depsHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "dependsOnScopes": [
+        "docs",
+        "deps"
+      ],
+      "scopeHeadsAtVerify": {
+        "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e",
+        "depsHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+      },
+      "sizeBytes": 3936,
+      "contentHash": "3a34bc3a22835b73150bea06c299831b84a7d9fbf85829447ffb2921e0265ca0",
       "warnings": []
     },
     {
       "artifactId": "CONTEXT_SUMMARY",
       "path": "docs/0-ai/artifacts/CONTEXT_SUMMARY.md",
-      "generatedAt": "2026-09-26T20:00:43Z",
-      "verifiedAt": "2026-09-26T20:00:43Z",
+      "generatedAt": "2026-10-02T14:29:24Z",
+      "verifiedAt": "2026-10-02T14:29:24Z",
       "status": "regenerated",
-      "sizeBytes": 2899,
-      "contentHash": "4657c854229c28f2875a83c535a026968a90e51ddbc260b0649f50b88f2e746f",
-      "dependsOnScopes": ["src"],
-      "scopeHeadsAtVerify": {"srcHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "dependsOnScopes": [
+        "src"
+      ],
+      "scopeHeadsAtVerify": {
+        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+      },
+      "sizeBytes": 7686,
+      "contentHash": "0ae6c800d2307c04f10b73d89a97122e2f04d9ca21a83c56e03fac451b1cbe6d",
       "warnings": []
     },
     {
       "artifactId": "SRC_SNAPSHOT_1",
       "path": "docs/0-ai/artifacts/SRC_SNAPSHOT_1.tsx",
-      "generatedAt": "2026-09-26T20:00:43Z",
-      "verifiedAt": "2026-09-26T20:00:43Z",
+      "generatedAt": "2026-10-02T14:29:24Z",
+      "verifiedAt": "2026-10-02T14:29:24Z",
       "status": "regenerated",
-      "sizeBytes": 42101,
-      "contentHash": "5aae4f4fce11ae9e763cd8ec9267106ad6ce933a9c130cf68945fdb4164ac17f",
-      "dependsOnScopes": ["src"],
-      "scopeHeadsAtVerify": {"srcHead": "2e822f15cba467b514160db25130df778a20c00e"},
+      "dependsOnScopes": [
+        "src"
+      ],
+      "scopeHeadsAtVerify": {
+        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+      },
+      "sizeBytes": 44205,
+      "contentHash": "c423b3d0281b244040c8828bbd1466a21c03f3e0971a9556373dd696a8622bdc",
       "warnings": []
     },
     {
       "artifactId": "ARTIFACT_PACK_MANIFEST",
       "path": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
-      "generatedAt": "2026-09-26T20:00:43Z",
-      "verifiedAt": "2026-09-26T20:00:43Z",
+      "generatedAt": "2026-10-02T14:29:24Z",
+      "verifiedAt": "2026-10-02T14:29:24Z",
       "status": "regenerated",
-      "dependsOnScopes": ["docs", "src", "deps"],
-      "scopeHeadsAtVerify": {"docsHead": null, "srcHead": "2e822f15cba467b514160db25130df778a20c00e", "depsHead": "2e822f15cba467b514160db25130df778a20c00e"},
-      "warnings": ["Manifest size and hash are intentionally omitted to avoid self-reference."]
+      "dependsOnScopes": [
+        "docs",
+        "src",
+        "deps"
+      ],
+      "scopeHeadsAtVerify": {
+        "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e",
+        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531",
+        "depsHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+      },
+      "warnings": [
+        "Manifest size and hash are intentionally omitted to avoid self-reference."
+      ]
     }
   ]
 }

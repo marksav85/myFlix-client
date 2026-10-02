@@ -2,37 +2,96 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-customDark;
-  @apply text-gray-700;
+@layer base {
+  :root {
+    --color-canvas: #0B0F17;
+    --color-surface-1: #131A26;
+    --color-surface-2: #1A2332;
+    --color-surface-elevated: #202B3B;
+    --color-border-subtle: rgba(255,255,255,0.08);
+    --color-border-strong: rgba(255,255,255,0.14);
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #CBD5E1;
+    --color-text-muted: #94A3B8;
+    --color-primary: #F59E0B;
+    --color-primary-hover: #D97706;
+    --color-on-primary: #0B0F17;
+    --color-secondary: #38BDF8;
+    --color-secondary-subtle: rgba(56,189,248,0.12);
+    --color-focus: #38BDF8;
+    /* White text: 4.70:1 at rest; darker hover maintains contrast. */
+    --color-danger: #E11D48;
+    --color-danger-hover: #BE123C;
+    --color-danger-subtle: rgba(244,63,94,0.12);
+    --color-on-danger: #FFFFFF;
+  }
+
+  body {
+    @apply m-0 bg-canvas text-text-primary font-sans text-body;
+    overflow-wrap: anywhere;
+  }
+  :where(h1, h2, h3, h4, h5, h6) { @apply font-bold; }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-bold;
-  @apply text-red-400;
+@layer components {
+  .app-shell { min-height: 100vh; }
+  .page-container { @apply mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-12; }
+  .surface { @apply rounded-control border border-border-subtle bg-surface-1; }
+  .surface-elevated { @apply rounded-surface border border-border-strong bg-surface-2 shadow-sm; }
+  .button {
+    @apply inline-flex min-h-[44px] min-w-0 max-w-full items-center justify-center gap-2 text-center rounded-control border px-4 py-2 text-label;
+    transition: background-color 180ms, border-color 180ms, color 180ms;
+  }
+  .button:disabled { @apply cursor-not-allowed opacity-60; }
+  .button-primary { @apply border-transparent bg-primary text-on-primary; }
+  .button-primary:hover:not(:disabled), .button-primary:active:not(:disabled) { @apply bg-primary-hover; }
+  .button-secondary { @apply border-border-strong bg-surface-1 text-text-primary; }
+  .button-secondary:hover:not(:disabled) { @apply bg-surface-2; }
+  .button-secondary:active:not(:disabled) { @apply bg-surface-elevated; }
+  .button-danger { @apply border-transparent bg-danger text-on-danger; }
+  .button-danger:hover:not(:disabled), .button-danger:active:not(:disabled) { @apply bg-danger-hover; }
+  .form-input {
+    @apply min-h-[48px] min-w-0 w-full rounded-control border border-text-muted bg-surface-1 px-3 text-body text-text-primary placeholder:text-text-muted;
+    color-scheme: dark;
+    transition: border-color 180ms;
+  }
+  .form-input:hover:not(:disabled) { @apply border-text-secondary; }
+  .form-input:focus-visible { @apply border-focus; }
+  .form-input[aria-invalid="true"] { @apply border-danger; }
+  .form-input:disabled { @apply cursor-not-allowed opacity-60; }
+  .nav-link { @apply inline-flex min-h-[44px] items-center rounded-control border border-transparent px-3 py-2 text-label text-text-secondary; }
+  .nav-link:hover { @apply bg-surface-2 text-text-primary; }
+  .nav-link:active { @apply bg-surface-elevated; }
+  .nav-link[aria-current="page"] { @apply border-primary bg-surface-2 text-primary underline underline-offset-4; }
+  .skip-link { @apply sr-only; }
+  .skip-link:focus { @apply not-sr-only fixed left-4 top-4 z-50 rounded-control bg-primary px-4 py-3 text-on-primary; }
+
+  .auth-layout { @apply flex justify-center py-4 sm:py-8; }
+  .auth-panel { @apply surface w-full max-w-md min-w-0 p-6 sm:p-8; }
+  .form-label { @apply mb-2 block text-label text-text-secondary; }
+  .auth-link { @apply inline-flex min-h-[44px] items-center rounded-control font-semibold text-primary underline underline-offset-4 hover:text-primary-hover; }
+  .auth-notice { @apply flex items-start gap-3 rounded-control border border-border-strong bg-surface-2 p-4 text-text-primary; }
+
+  .movie-grid { @apply grid grid-cols-1 gap-6 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4; }
+  .library-notice { @apply surface p-6 text-text-secondary; }
+  .movie-card { @apply surface flex min-w-0 flex-col overflow-hidden; transition: border-color 180ms, box-shadow 180ms; }
+  .movie-card:hover { @apply border-border-strong shadow-sm; }
+
+  .movie-detail { @apply surface grid items-start overflow-hidden md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]; }
+  .movie-detail-poster { @apply mx-auto aspect-[2/3] w-full max-w-[320px] object-cover md:max-w-[420px]; }
+
+  .profile-panel { @apply surface min-w-0 p-6 sm:p-8; }
+  .profile-dialog-backdrop { @apply fixed inset-0 z-50 flex items-center justify-center p-4; }
+
 }
 
-button {
-  @apply bg-red-400;
-  @apply text-white;
-}
-
-button:hover {
-  @apply bg-customDark;
-}
-
-a:hover {
-  @apply text-white;
-}
-
-#navlink {
-  @apply text-red-400;
-  @apply font-bold;
-  @apply hover:text-white;
-  @apply cursor-pointer;
+/* Keep keyboard focus visible even when component utilities customize outlines. */
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -12,7 +12,7 @@ getApiBaseUrl();
 const MyFlixApplication = () => {
   return (
     <AppProvider>
-      <div className="body-container p-2">
+      <div className="app-shell">
         <MainView />
       </div>
     </AppProvider>
