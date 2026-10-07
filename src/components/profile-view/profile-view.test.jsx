@@ -28,7 +28,35 @@ describe("ProfileView", () => {
     expect(within(info).getByText(account.Email)).toBeInTheDocument();
     expect(within(info).getByText("1990-01-01")).toHaveAttribute("datetime", "1990-01-01");
     expect(screen.getByLabelText("Birthday:")).toHaveValue("1990-01-01");
-    expect(screen.getByLabelText("Password:")).toHaveAccessibleDescription("Optional. Leave blank to keep your current password.");
+    expect(screen.getByLabelText("Password (required to save changes)")).toHaveAccessibleDescription("Enter your current password to keep it, or a different password to change it.");
+  });
+
+  it("requires a password and blocks blank saves with accessible feedback", async () => {
+    const user = userEvent.setup();
+    globalThis.fetch = vi.fn();
+    renderProfile();
+    const password = screen.getByLabelText("Password (required to save changes)");
+    expect(password).toBeRequired();
+    expect(password).toHaveAttribute("minlength", "5");
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent("Enter a password to save profile changes.");
+    expect(password).toHaveAttribute("aria-invalid", "true");
+    expect(password).toHaveAccessibleDescription(expect.stringContaining("Enter a password to save profile changes."));
+    await user.type(password, "abcd");
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent("Enter a password with at least 5 characters.");
+  });
+
+  it("maps the API password-required fallback to field feedback", async () => {
+    const user = userEvent.setup();
+    globalThis.fetch = vi.fn().mockResolvedValue(response({ errors: [{ path: "Password", msg: "Password is required" }] }, 422));
+    renderProfile();
+    await user.type(screen.getByLabelText("Password (required to save changes)"), "valid-password");
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Enter a password to save profile changes.");
+    expect(screen.queryByText("Update unsuccessful. Please try again.")).not.toBeInTheDocument();
   });
 
   it.each([
@@ -63,6 +91,7 @@ describe("ProfileView", () => {
     let finish;
     globalThis.fetch = vi.fn(() => new Promise((resolve) => { finish = resolve; }));
     renderProfile();
+    await user.type(screen.getByLabelText("Password (required to save changes)"), "valid-password");
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
     const pending = screen.getByRole("button", { name: "Saving..." });
     expect(pending).toBeDisabled();

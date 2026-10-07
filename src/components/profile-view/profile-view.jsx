@@ -26,6 +26,7 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
   const hasUser = Boolean(user);
   const [username, setUsername] = useState(currentUser.Username);
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState(currentUser.Email || "");
   const [birthday, setBirthday] = useState(
     toDateInputValue(currentUser.Birthday || currentUser.BirthDate)
@@ -90,6 +91,7 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
   useEffect(() => {
     setUsername(currentUser.Username);
     setPassword("");
+    setPasswordError("");
     setEmail(currentUser.Email || "");
     setBirthday(toDateInputValue(currentUser.Birthday || currentUser.BirthDate));
   }, [currentUser]);
@@ -102,13 +104,20 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (savingPending.current || deletionPending.current) return;
+    setPasswordError("");
+    if (!password || password.length < 5) {
+      setSuccess("");
+      setError("");
+      setPasswordError(!password ? "Enter a password to save profile changes." : "Enter a password with at least 5 characters.");
+      event.currentTarget.querySelector("#profile-password")?.focus();
+      return;
+    }
     savingPending.current = true;
     setSuccess("");
     setError("");
     setIsSaving(true);
 
-    const updates = { Username: username, Email: email, Birthday: birthday };
-    if (password) updates.Password = password;
+    const updates = { Username: username, Email: email, Birthday: birthday, Password: password };
 
     try {
       const updatedUser = await api.updateUser(currentUser.Username, updates, token);
@@ -120,7 +129,11 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
       setSuccess("Update successful.");
     } catch (requestError) {
       if (!handleApiError(requestError)) {
-        setError("Update unsuccessful. Please try again.");
+        if (requestError.status === 422 && requestError.message === "Password is required") {
+          setPasswordError("Enter a password to save profile changes.");
+        } else {
+          setError("Update unsuccessful. Please try again.");
+        }
       }
     } finally {
       savingPending.current = false;
@@ -156,7 +169,8 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
           birthday={toDateInputValue(currentUser.Birthday || currentUser.BirthDate)} />
         <UpdateUser handleSubmit={handleSubmit} setUsername={setUsername} setPassword={setPassword}
           setEmail={setEmail} setBirthday={setBirthday} username={username} password={password}
-          email={email} birthday={birthday} isSaving={isSaving} success={success} error={error} />
+          email={email} birthday={birthday} isSaving={isSaving} success={success} error={error}
+          passwordError={passwordError} setPasswordError={setPasswordError} />
       </div>
       <FavoriteMovies favoriteMovies={favoriteMovies} isLoading={isLoadingMovies} error={movieError}
         hasFavoriteIds={Boolean(currentUser.FavoriteMovies?.length)} />

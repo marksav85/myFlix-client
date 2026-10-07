@@ -10,9 +10,13 @@ export class ApiError extends Error {
 
 const buildUrl = (path) => `${getApiBaseUrl()}/${path.replace(/^\/+/, "")}`;
 
-const getErrorMessage = async (response) => {
+const getErrorMessage = async (response, profileUpdate) => {
   try {
     const data = await response.json();
+    if (profileUpdate && response.status === 422 && Array.isArray(data.errors) &&
+      data.errors.some((error) => error.path === "Password" && error.msg === "Password is required")) {
+      return "Password is required";
+    }
     return data.message || data.error || "The request could not be completed.";
   } catch {
     return "The request could not be completed.";
@@ -20,7 +24,7 @@ const getErrorMessage = async (response) => {
 };
 
 export const request = async (path, options = {}) => {
-  const { token, body, headers, ...fetchOptions } = options;
+  const { token, body, headers, profileUpdate = false, ...fetchOptions } = options;
   const response = await fetch(buildUrl(path), {
     ...fetchOptions,
     headers: {
@@ -32,7 +36,7 @@ export const request = async (path, options = {}) => {
   });
 
   if (!response.ok) {
-    throw new ApiError(await getErrorMessage(response), response.status);
+    throw new ApiError(await getErrorMessage(response, profileUpdate), response.status);
   }
 
   if (response.status === 204) {
@@ -58,7 +62,7 @@ export const api = {
   signup: (user) => request("users", { method: "POST", body: user }),
   getMovies: (token, signal) => request("movies", { token, signal }),
   updateUser: (username, updates, token) =>
-    request(`users/${encode(username)}`, { method: "PUT", body: updates, token }),
+    request(`users/${encode(username)}`, { method: "PUT", body: updates, token, profileUpdate: true }),
   deleteUser: (username, token) =>
     request(`users/${encode(username)}`, { method: "DELETE", token }),
   addFavorite: (username, movieId, token) =>

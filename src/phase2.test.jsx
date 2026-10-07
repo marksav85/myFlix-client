@@ -123,7 +123,7 @@ describe("Phase 2 regression behavior", () => {
     );
   });
 
-  it("sends Birthday and omits a blank password when updating a profile", async () => {
+  it("sends Birthday and required Password when updating a profile", async () => {
     const user = userEvent.setup();
     localStorage.setItem("user", JSON.stringify(authenticatedUser));
     localStorage.setItem("token", "test-token");
@@ -134,6 +134,7 @@ describe("Phase 2 regression behavior", () => {
     expect(screen.getByLabelText("Birthday:")).toHaveValue("1990-01-01");
     await user.clear(screen.getByLabelText("Email:"));
     await user.type(screen.getByLabelText("Email:"), "new@example.com");
+    await user.type(screen.getByLabelText("Password (required to save changes)"), "valid-password");
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
@@ -144,6 +145,7 @@ describe("Phase 2 regression behavior", () => {
           Username: "Ada",
           Email: "new@example.com",
           Birthday: "1990-01-01",
+          Password: "valid-password",
         }),
       })
     );
@@ -162,6 +164,7 @@ describe("Phase 2 regression behavior", () => {
 
     await user.clear(screen.getByLabelText("Username:"));
     await user.type(screen.getByLabelText("Username:"), "Grace");
+    await user.type(screen.getByLabelText("Password (required to save changes)"), "valid-password");
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     expect(localStorage.getItem("user")).toBeNull();

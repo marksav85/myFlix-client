@@ -14,6 +14,8 @@ function UpdateUser({
   isSaving,
   success = "",
   error = "",
+  passwordError = "",
+  setPasswordError,
 }) {
   return (
     <section className="profile-panel" aria-labelledby="update-account-title">
@@ -26,11 +28,20 @@ function UpdateUser({
             className="form-input" required minLength="3" placeholder="Enter Username" autoComplete="username" />
         </div>
         <div>
-          <label htmlFor="profile-password" className="form-label">Password:</label>
-          <input id="profile-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)}
-            className="form-input" minLength="3" placeholder="Enter Password" autoComplete="new-password"
-            aria-describedby="profile-password-help" />
-          <p id="profile-password-help" className="mt-2 text-body-sm text-text-muted">Optional. Leave blank to keep your current password.</p>
+          <label htmlFor="profile-password" className="form-label">Password (required to save changes)</label>
+          <input id="profile-password" type="password" value={password} onChange={(event) => { setPassword(event.target.value); setPasswordError(""); }}
+            onInvalid={(event) => {
+              event.preventDefault();
+              setPasswordError(event.target.validity.valueMissing
+                ? "Enter a password to save profile changes."
+                : "Enter a password with at least 5 characters.");
+              event.target.focus();
+            }}
+            className="form-input" required minLength="5" placeholder="Enter Password" autoComplete="new-password"
+            aria-invalid={passwordError ? true : undefined}
+            aria-describedby={passwordError ? "profile-password-help profile-password-error" : "profile-password-help"} />
+          <p id="profile-password-help" className="mt-2 text-body-sm text-text-muted">Enter your current password to keep it, or a different password to change it.</p>
+          {passwordError && <p id="profile-password-error" className="mt-2 text-body-sm text-text-muted" role="alert">{passwordError}</p>}
         </div>
         <div>
           <label htmlFor="profile-email" className="form-label">Email:</label>
@@ -65,6 +76,8 @@ UpdateUser.propTypes = {
   isSaving: PropTypes.bool.isRequired,
   success: PropTypes.string,
   error: PropTypes.string,
+  passwordError: PropTypes.string,
+  setPasswordError: PropTypes.func.isRequired,
 };
 
 export default UpdateUser;
