@@ -106,7 +106,7 @@ no Wrangler configuration is tracked in this repository.
 | Setting | Configuration |
 | --- | --- |
 | GitHub repository | [marksav85/myFlix-client](https://github.com/marksav85/myFlix-client) |
-| Production branch | `refactor/portfolio-update` |
+| Production branch | `main` |
 | Root directory | `/` |
 | Build command | `npm run build` |
 | Deploy command | `npx wrangler deploy` |
