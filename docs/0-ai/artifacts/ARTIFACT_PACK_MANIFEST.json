@@ -1,44 +1,46 @@
 {
-  "packId": "2026-10-09T13:50:22Z",
+  "packId": "2026-10-09T14:40:28Z",
   "runMode": "controller",
-  "generatedAt": "2026-10-09T13:50:22Z",
-  "verifiedAt": "2026-10-09T13:50:22Z",
+  "generatedAt": "2026-10-09T14:40:28Z",
+  "verifiedAt": "2026-10-09T14:40:28Z",
   "repoBranch": "refactor/portfolio-update",
-  "repoHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
+  "repoHead": "f3b95eb5be69b1eb67f2d5d12d87db2c528322e5",
   "scopeHeads": {
-    "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
+    "docsHead": "8b07b08ba57abc1f7c2f2c48681ef8b6fb0140a8",
     "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300",
-    "depsHead": "4d38c643543bedc2603a3eabed9625830a2d14ac"
+    "depsHead": "f3b95eb5be69b1eb67f2d5d12d87db2c528322e5"
   },
   "dirtyWorkingTree": false,
   "stalenessSummary": {
     "counts": {
-      "flagged": 6,
-      "regenerated": 6,
+      "flagged": 2,
+      "regenerated": 3,
       "acknowledged": 0,
-      "verified": 0,
+      "verified": 3,
       "missing": 0
     },
     "scopeChanges": {
       "docs": true,
-      "src": true,
+      "src": false,
       "deps": true
     },
-    "reason": "All recorded scopes changed; full-pack regeneration explicitly authorized. Baseline captured from a clean working tree before generation."
+    "reason": "Approved APPLY ALL: regenerate DOCS_TREE and PROJECT_OVERVIEW for documentation/dependency/configuration changes; verify unchanged source artifacts; regenerate manifest last."
   },
   "warnings": [
-    "DOCS_TREE sizes describe the final generated files; size-only self references were normalized before final manifest hashing.",
+    "Generation baseline was clean; dirtyWorkingTree records pre-generation state.",
+    "Ignored environment files, system directories, caches and build output are excluded; environment values were not read.",
     "Excluded documentation media: docs/design/assets/myflix-icon-source.png.",
-    "Ignored environment files and system/build/cache directories are excluded; no environment values were read.",
-    "No application tests, builds, security scans, or production checks were run."
+    "DOCS_TREE byte-size inventory normalized against final outputs before manifest write.",
+    "Preserved artifacts retain their original generation timestamps and pack IDs; verifiedAt records this controller run.",
+    "No application tests, builds, security scans or production checks were run in this artifact refresh."
   ],
   "artifacts": [
     {
       "artifactId": "SRC_TREE",
       "path": "docs/0-ai/artifacts/SRC_TREE.json",
       "generatedAt": "2026-10-09T13:50:22Z",
-      "verifiedAt": "2026-10-09T13:50:22Z",
-      "status": "regenerated",
+      "verifiedAt": "2026-10-09T14:40:28Z",
+      "status": "verified",
       "dependsOnScopes": [
         "src"
       ],
@@ -51,41 +53,41 @@
     {
       "artifactId": "DOCS_TREE",
       "path": "docs/0-ai/artifacts/DOCS_TREE.json",
-      "generatedAt": "2026-10-09T13:50:22Z",
-      "verifiedAt": "2026-10-09T13:50:22Z",
+      "generatedAt": "2026-10-09T14:40:28Z",
+      "verifiedAt": "2026-10-09T14:40:28Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "docs"
       ],
       "scopeHeadsAtVerify": {
-        "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79"
+        "docsHead": "8b07b08ba57abc1f7c2f2c48681ef8b6fb0140a8"
       },
       "sizeBytes": 3517,
-      "contentHash": "c5dc0949238ae82b6278999871c0caa656b32ef5b8d06a39c7fa2802680a3844"
+      "contentHash": "5cdc8ecbc8b20c4612296098e8fbe89f5af7363cb34b839ad44b69270539cbd6"
     },
     {
       "artifactId": "PROJECT_OVERVIEW",
       "path": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
-      "generatedAt": "2026-10-09T13:50:22Z",
-      "verifiedAt": "2026-10-09T13:50:22Z",
+      "generatedAt": "2026-10-09T14:40:28Z",
+      "verifiedAt": "2026-10-09T14:40:28Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "docs",
         "deps"
       ],
       "scopeHeadsAtVerify": {
-        "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
-        "depsHead": "4d38c643543bedc2603a3eabed9625830a2d14ac"
+        "docsHead": "8b07b08ba57abc1f7c2f2c48681ef8b6fb0140a8",
+        "depsHead": "f3b95eb5be69b1eb67f2d5d12d87db2c528322e5"
       },
-      "sizeBytes": 4054,
-      "contentHash": "6b643d36aecd7b13d58fe0a37baf0ffd88e1b54554e754bb6723dfeafdd0dbc3"
+      "sizeBytes": 4620,
+      "contentHash": "e30ba2801edc199fecac0d5dad9c8260ba980b6230b874cc7a29286fc3be344c"
     },
     {
       "artifactId": "CONTEXT_SUMMARY",
       "path": "docs/0-ai/artifacts/CONTEXT_SUMMARY.md",
       "generatedAt": "2026-10-09T13:50:22Z",
-      "verifiedAt": "2026-10-09T13:50:22Z",
-      "status": "regenerated",
+      "verifiedAt": "2026-10-09T14:40:28Z",
+      "status": "verified",
       "dependsOnScopes": [
         "src"
       ],
@@ -99,8 +101,8 @@
       "artifactId": "SRC_SNAPSHOT_1",
       "path": "docs/0-ai/artifacts/SRC_SNAPSHOT_1.tsx",
       "generatedAt": "2026-10-09T13:50:22Z",
-      "verifiedAt": "2026-10-09T13:50:22Z",
-      "status": "regenerated",
+      "verifiedAt": "2026-10-09T14:40:28Z",
+      "status": "verified",
       "dependsOnScopes": [
         "src"
       ],
@@ -113,8 +115,8 @@
     {
       "artifactId": "ARTIFACT_PACK_MANIFEST",
       "path": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
-      "generatedAt": "2026-10-09T13:50:22Z",
-      "verifiedAt": "2026-10-09T13:50:22Z",
+      "generatedAt": "2026-10-09T14:40:28Z",
+      "verifiedAt": "2026-10-09T14:40:28Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "docs",
@@ -122,9 +124,9 @@
         "deps"
       ],
       "scopeHeadsAtVerify": {
-        "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
+        "docsHead": "8b07b08ba57abc1f7c2f2c48681ef8b6fb0140a8",
         "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300",
-        "depsHead": "4d38c643543bedc2603a3eabed9625830a2d14ac"
+        "depsHead": "f3b95eb5be69b1eb67f2d5d12d87db2c528322e5"
       },
       "warnings": [
         "Manifest size and hash omitted to avoid self-reference."

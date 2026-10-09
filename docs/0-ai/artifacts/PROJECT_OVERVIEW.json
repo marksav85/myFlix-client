@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T13:50:22Z",
+  "generatedAt": "2026-10-09T14:40:28Z",
   "rootTree": {
     "files": [
       ".env.example",
@@ -47,6 +47,33 @@
       ],
       "hasThemeExtension": true,
       "plugins": []
+    },
+    "eslint": {
+      "configFile": ".eslintrc.js",
+      "baseEnvironments": [
+        "browser",
+        "es2021"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+      ],
+      "nodeEnvironmentFiles": [
+        "*.config.js",
+        "*.cjs",
+        ".eslintrc.js"
+      ],
+      "readonlyProcessFiles": [
+        "src/api/config.js",
+        "src/test/setup.js"
+      ],
+      "testGlobals": [
+        "describe",
+        "expect",
+        "it"
+      ],
+      "noUndef": "enabled through eslint:recommended; no configuration-file suppression",
+      "sourceType": "module; CommonJS configuration override uses script"
     }
   },
   "packageJson": {
@@ -81,7 +108,6 @@
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.7",
-        "autoprefixer": "^10.4.19",
         "eslint": "^8.47.0",
         "eslint-plugin-react": "^7.33.2",
         "jsdom": "^30.1.1",
@@ -119,7 +145,6 @@
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.7",
-        "autoprefixer": "^10.4.19",
         "eslint": "^8.47.0",
         "eslint-plugin-react": "^7.33.2",
         "jsdom": "^30.1.1",
@@ -137,7 +162,6 @@
         "react-router-dom": "^6.30.6"
       },
       "styling": {
-        "autoprefixer": "^10.4.19",
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.4"
       },

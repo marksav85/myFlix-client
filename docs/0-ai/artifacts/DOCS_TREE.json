@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T13:50:22Z",
+  "generatedAt": "2026-10-09T14:40:28Z",
   "root": "docs",
   "summary": {
     "totalFiles": 7,
@@ -26,7 +26,7 @@
               "name": "ARTIFACT_PACK_MANIFEST.json",
               "relativePath": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
               "extension": ".json",
-              "sizeKB": 4.4,
+              "sizeKB": 4.6,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
@@ -64,7 +64,7 @@
               "name": "PROJECT_OVERVIEW.json",
               "relativePath": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
               "extension": ".json",
-              "sizeKB": 4.0,
+              "sizeKB": 4.5,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
