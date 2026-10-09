@@ -2,7 +2,6 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    node: true, // Add node environment globally
   },
   extends: ["eslint:recommended", "plugin:react/recommended"],
   settings: {
@@ -13,17 +12,21 @@ module.exports = {
   overrides: [
     {
       files: [
-        "*.config.js", // Apply node environment to all config files
+        "*.config.js",
         "*.cjs",
+        ".eslintrc.js",
       ],
       env: {
         node: true,
       },
-      rules: {
-        "no-undef": "off", // Disable no-undef rule for these files
-      },
       parserOptions: {
         sourceType: "script", // Ensure source type is script for these files
+      },
+    },
+    {
+      files: ["src/api/config.js", "src/test/setup.js"],
+      globals: {
+        process: "readonly",
       },
     },
     {
