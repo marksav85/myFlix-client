@@ -685,7 +685,7 @@ Do not introduce:
 Fields:
 
 - Username
-- optional new Password
+- Password (required to save changes; at least five characters)
 - Email
 - Birthday
 
@@ -693,8 +693,9 @@ Primary action:
 
 - Save Changes
 
-A blank password means no password replacement when supported by the
-application logic.
+A password of at least five characters is required when saving any profile
+changes, including changes to Username, Email, or Birthday. Enter the current
+password to keep it, or a different password to change it.
 
 ## Favorites
 
