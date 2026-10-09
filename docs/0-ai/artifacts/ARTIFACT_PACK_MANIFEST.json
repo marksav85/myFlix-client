@@ -1,16 +1,16 @@
 {
-  "packId": "2026-10-02T14:29:24Z",
+  "packId": "2026-10-09T13:50:22Z",
   "runMode": "controller",
-  "generatedAt": "2026-10-02T14:29:24Z",
-  "verifiedAt": "2026-10-02T14:29:24Z",
+  "generatedAt": "2026-10-09T13:50:22Z",
+  "verifiedAt": "2026-10-09T13:50:22Z",
   "repoBranch": "refactor/portfolio-update",
-  "repoHead": "67e0f171100ea2f2c27c216facea6bfd661ac531",
+  "repoHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
   "scopeHeads": {
-    "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e",
-    "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531",
-    "depsHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+    "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
+    "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300",
+    "depsHead": "4d38c643543bedc2603a3eabed9625830a2d14ac"
   },
-  "dirtyWorkingTree": true,
+  "dirtyWorkingTree": false,
   "stalenessSummary": {
     "counts": {
       "flagged": 6,
@@ -24,105 +24,97 @@
       "src": true,
       "deps": true
     },
-    "reason": "Previous baseline predates committed API/session hardening and dependency modernization. Documentation had no prior scope baseline; current uncommitted design/source/public changes and README updates were explicitly inspected. Full regeneration authorized in the user request."
+    "reason": "All recorded scopes changed; full-pack regeneration explicitly authorized. Baseline captured from a clean working tree before generation."
   },
   "warnings": [
-    "Uncommitted changes detected; staleness detection uses commits and may miss local changes. This regeneration reads the current working tree, including untracked implementation/design files.",
-    "Commit scope heads do not identify the uncommitted redesign; snapshot bytes and artifact hashes capture the inspected working-tree content.",
-    "PROJECT_OVERVIEW excludes system directories and generated caches; .env is listed by name only and its contents are never copied."
+    "DOCS_TREE sizes describe the final generated files; size-only self references were normalized before final manifest hashing.",
+    "Excluded documentation media: docs/design/assets/myflix-icon-source.png.",
+    "Ignored environment files and system/build/cache directories are excluded; no environment values were read.",
+    "No application tests, builds, security scans, or production checks were run."
   ],
   "artifacts": [
     {
       "artifactId": "SRC_TREE",
       "path": "docs/0-ai/artifacts/SRC_TREE.json",
-      "generatedAt": "2026-10-02T14:29:24Z",
-      "verifiedAt": "2026-10-02T14:29:24Z",
+      "generatedAt": "2026-10-09T13:50:22Z",
+      "verifiedAt": "2026-10-09T13:50:22Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "src"
       ],
       "scopeHeadsAtVerify": {
-        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+        "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300"
       },
-      "sizeBytes": 7984,
-      "contentHash": "a94b5945e82afbd606b9d3c2d39c72ab63f9b8979acefd43df76c354fbc899d7",
-      "warnings": [
-        "Canonical tree excludes test/spec/story files, CSS, HTML, and static assets; src/test/setup.js remains included as a JavaScript support file."
-      ]
+      "sizeBytes": 7869,
+      "contentHash": "37cb240f7a33df6711d61976418ad78e385c19c5821e1e7b42d89e91b848ca0a"
     },
     {
       "artifactId": "DOCS_TREE",
       "path": "docs/0-ai/artifacts/DOCS_TREE.json",
-      "generatedAt": "2026-10-02T14:29:24Z",
-      "verifiedAt": "2026-10-02T14:29:24Z",
+      "generatedAt": "2026-10-09T13:50:22Z",
+      "verifiedAt": "2026-10-09T13:50:22Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "docs"
       ],
       "scopeHeadsAtVerify": {
-        "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e"
+        "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79"
       },
       "sizeBytes": 3517,
-      "contentHash": "0d50ee507a9d012f66fd445ddb037a8f5d6302ea59f82e66bea3e5466ba3f11b",
-      "warnings": [
-        "Excluded documentation media: docs/design/assets/myflix-icon-source.png (documentation-only reference artwork)."
-      ]
+      "contentHash": "c5dc0949238ae82b6278999871c0caa656b32ef5b8d06a39c7fa2802680a3844"
     },
     {
       "artifactId": "PROJECT_OVERVIEW",
       "path": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
-      "generatedAt": "2026-10-02T14:29:24Z",
-      "verifiedAt": "2026-10-02T14:29:24Z",
+      "generatedAt": "2026-10-09T13:50:22Z",
+      "verifiedAt": "2026-10-09T13:50:22Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "docs",
         "deps"
       ],
       "scopeHeadsAtVerify": {
-        "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e",
-        "depsHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+        "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
+        "depsHead": "4d38c643543bedc2603a3eabed9625830a2d14ac"
       },
-      "sizeBytes": 3936,
-      "contentHash": "3a34bc3a22835b73150bea06c299831b84a7d9fbf85829447ffb2921e0265ca0",
-      "warnings": []
+      "sizeBytes": 4054,
+      "contentHash": "6b643d36aecd7b13d58fe0a37baf0ffd88e1b54554e754bb6723dfeafdd0dbc3"
     },
     {
       "artifactId": "CONTEXT_SUMMARY",
       "path": "docs/0-ai/artifacts/CONTEXT_SUMMARY.md",
-      "generatedAt": "2026-10-02T14:29:24Z",
-      "verifiedAt": "2026-10-02T14:29:24Z",
+      "generatedAt": "2026-10-09T13:50:22Z",
+      "verifiedAt": "2026-10-09T13:50:22Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "src"
       ],
       "scopeHeadsAtVerify": {
-        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+        "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300"
       },
-      "sizeBytes": 7686,
-      "contentHash": "0ae6c800d2307c04f10b73d89a97122e2f04d9ca21a83c56e03fac451b1cbe6d",
-      "warnings": []
+      "sizeBytes": 7283,
+      "contentHash": "6562e4d64a887f4b9433c3fd7b417386541beb37263dff43ddc140d1d75752b9"
     },
     {
       "artifactId": "SRC_SNAPSHOT_1",
       "path": "docs/0-ai/artifacts/SRC_SNAPSHOT_1.tsx",
-      "generatedAt": "2026-10-02T14:29:24Z",
-      "verifiedAt": "2026-10-02T14:29:24Z",
+      "generatedAt": "2026-10-09T13:50:22Z",
+      "verifiedAt": "2026-10-09T13:50:22Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "src"
       ],
       "scopeHeadsAtVerify": {
-        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+        "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300"
       },
-      "sizeBytes": 44205,
-      "contentHash": "c423b3d0281b244040c8828bbd1466a21c03f3e0971a9556373dd696a8622bdc",
-      "warnings": []
+      "sizeBytes": 45967,
+      "contentHash": "144aa0939309f9f114a6ea9d453200f185152ed4d68151fe9d17d2bf73a47a40"
     },
     {
       "artifactId": "ARTIFACT_PACK_MANIFEST",
       "path": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
-      "generatedAt": "2026-10-02T14:29:24Z",
-      "verifiedAt": "2026-10-02T14:29:24Z",
+      "generatedAt": "2026-10-09T13:50:22Z",
+      "verifiedAt": "2026-10-09T13:50:22Z",
       "status": "regenerated",
       "dependsOnScopes": [
         "docs",
@@ -130,12 +122,12 @@
         "deps"
       ],
       "scopeHeadsAtVerify": {
-        "docsHead": "32e47c1f258464524041b01be49cd6c2a33af24e",
-        "srcHead": "67e0f171100ea2f2c27c216facea6bfd661ac531",
-        "depsHead": "67e0f171100ea2f2c27c216facea6bfd661ac531"
+        "docsHead": "87f75af8d860dba0756cd1f8efb3f8cef0f9fd79",
+        "srcHead": "161e3b15ed405d3c8539385aed17bef7f73d5300",
+        "depsHead": "4d38c643543bedc2603a3eabed9625830a2d14ac"
       },
       "warnings": [
-        "Manifest size and hash are intentionally omitted to avoid self-reference."
+        "Manifest size and hash omitted to avoid self-reference."
       ]
     }
   ]

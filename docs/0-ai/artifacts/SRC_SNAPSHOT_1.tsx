@@ -1,4 +1,4 @@
-// ARTIFACT_META: {"artifactId":"SRC_SNAPSHOT_1","packId":"2026-10-02T14:29:24Z","generatedAt":"2026-10-02T14:29:24Z","generator":"prompt--artifact--generate-snapshot.md"}
+// ARTIFACT_META: {"artifactId":"SRC_SNAPSHOT_1","packId":"2026-10-09T13:50:22Z","generatedAt":"2026-10-09T13:50:22Z","generator":"prompt--artifact--generate-snapshot.md"}
 
 // ===== FILE: src/components/main-view/main-view.jsx =====
 import React, { useState, useEffect } from "react";
@@ -504,6 +504,7 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
   const hasUser = Boolean(user);
   const [username, setUsername] = useState(currentUser.Username);
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [email, setEmail] = useState(currentUser.Email || "");
   const [birthday, setBirthday] = useState(
     toDateInputValue(currentUser.Birthday || currentUser.BirthDate)
@@ -568,6 +569,7 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
   useEffect(() => {
     setUsername(currentUser.Username);
     setPassword("");
+    setPasswordError("");
     setEmail(currentUser.Email || "");
     setBirthday(toDateInputValue(currentUser.Birthday || currentUser.BirthDate));
   }, [currentUser]);
@@ -580,13 +582,20 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (savingPending.current || deletionPending.current) return;
+    setPasswordError("");
+    if (!password || password.length < 5) {
+      setSuccess("");
+      setError("");
+      setPasswordError(!password ? "Enter a password to save profile changes." : "Enter a password with at least 5 characters.");
+      event.currentTarget.querySelector("#profile-password")?.focus();
+      return;
+    }
     savingPending.current = true;
     setSuccess("");
     setError("");
     setIsSaving(true);
 
-    const updates = { Username: username, Email: email, Birthday: birthday };
-    if (password) updates.Password = password;
+    const updates = { Username: username, Email: email, Birthday: birthday, Password: password };
 
     try {
       const updatedUser = await api.updateUser(currentUser.Username, updates, token);
@@ -598,7 +607,11 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
       setSuccess("Update successful.");
     } catch (requestError) {
       if (!handleApiError(requestError)) {
-        setError("Update unsuccessful. Please try again.");
+        if (requestError.status === 422 && requestError.message === "Password is required") {
+          setPasswordError("Enter a password to save profile changes.");
+        } else {
+          setError("Update unsuccessful. Please try again.");
+        }
       }
     } finally {
       savingPending.current = false;
@@ -634,7 +647,8 @@ export const ProfileView = ({ movies, isLoadingMovies = false, movieError = "" }
           birthday={toDateInputValue(currentUser.Birthday || currentUser.BirthDate)} />
         <UpdateUser handleSubmit={handleSubmit} setUsername={setUsername} setPassword={setPassword}
           setEmail={setEmail} setBirthday={setBirthday} username={username} password={password}
-          email={email} birthday={birthday} isSaving={isSaving} success={success} error={error} />
+          email={email} birthday={birthday} isSaving={isSaving} success={success} error={error}
+          passwordError={passwordError} setPasswordError={setPasswordError} />
       </div>
       <FavoriteMovies favoriteMovies={favoriteMovies} isLoading={isLoadingMovies} error={movieError}
         hasFavoriteIds={Boolean(currentUser.FavoriteMovies?.length)} />
@@ -691,6 +705,8 @@ function UpdateUser({
   isSaving,
   success = "",
   error = "",
+  passwordError = "",
+  setPasswordError,
 }) {
   return (
     <section className="profile-panel" aria-labelledby="update-account-title">
@@ -703,11 +719,20 @@ function UpdateUser({
             className="form-input" required minLength="3" placeholder="Enter Username" autoComplete="username" />
         </div>
         <div>
-          <label htmlFor="profile-password" className="form-label">Password:</label>
-          <input id="profile-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)}
-            className="form-input" minLength="3" placeholder="Enter Password" autoComplete="new-password"
-            aria-describedby="profile-password-help" />
-          <p id="profile-password-help" className="mt-2 text-body-sm text-text-muted">Optional. Leave blank to keep your current password.</p>
+          <label htmlFor="profile-password" className="form-label">Password (required to save changes)</label>
+          <input id="profile-password" type="password" value={password} onChange={(event) => { setPassword(event.target.value); setPasswordError(""); }}
+            onInvalid={(event) => {
+              event.preventDefault();
+              setPasswordError(event.target.validity.valueMissing
+                ? "Enter a password to save profile changes."
+                : "Enter a password with at least 5 characters.");
+              event.target.focus();
+            }}
+            className="form-input" required minLength="5" placeholder="Enter Password" autoComplete="new-password"
+            aria-invalid={passwordError ? true : undefined}
+            aria-describedby={passwordError ? "profile-password-help profile-password-error" : "profile-password-help"} />
+          <p id="profile-password-help" className="mt-2 text-body-sm text-text-muted">Enter your current password to keep it, or a different password to change it.</p>
+          {passwordError && <p id="profile-password-error" className="mt-2 text-body-sm text-text-muted" role="alert">{passwordError}</p>}
         </div>
         <div>
           <label htmlFor="profile-email" className="form-label">Email:</label>
@@ -742,6 +767,8 @@ UpdateUser.propTypes = {
   isSaving: PropTypes.bool.isRequired,
   success: PropTypes.string,
   error: PropTypes.string,
+  passwordError: PropTypes.string,
+  setPasswordError: PropTypes.func.isRequired,
 };
 
 export default UpdateUser;
@@ -901,9 +928,13 @@ export class ApiError extends Error {
 
 const buildUrl = (path) => `${getApiBaseUrl()}/${path.replace(/^\/+/, "")}`;
 
-const getErrorMessage = async (response) => {
+const getErrorMessage = async (response, profileUpdate) => {
   try {
     const data = await response.json();
+    if (profileUpdate && response.status === 422 && Array.isArray(data.errors) &&
+      data.errors.some((error) => error.path === "Password" && error.msg === "Password is required")) {
+      return "Password is required";
+    }
     return data.message || data.error || "The request could not be completed.";
   } catch {
     return "The request could not be completed.";
@@ -911,7 +942,7 @@ const getErrorMessage = async (response) => {
 };
 
 export const request = async (path, options = {}) => {
-  const { token, body, headers, ...fetchOptions } = options;
+  const { token, body, headers, profileUpdate = false, ...fetchOptions } = options;
   const response = await fetch(buildUrl(path), {
     ...fetchOptions,
     headers: {
@@ -923,7 +954,7 @@ export const request = async (path, options = {}) => {
   });
 
   if (!response.ok) {
-    throw new ApiError(await getErrorMessage(response), response.status);
+    throw new ApiError(await getErrorMessage(response, profileUpdate), response.status);
   }
 
   if (response.status === 204) {
@@ -949,7 +980,7 @@ export const api = {
   signup: (user) => request("users", { method: "POST", body: user }),
   getMovies: (token, signal) => request("movies", { token, signal }),
   updateUser: (username, updates, token) =>
-    request(`users/${encode(username)}`, { method: "PUT", body: updates, token }),
+    request(`users/${encode(username)}`, { method: "PUT", body: updates, token, profileUpdate: true }),
   deleteUser: (username, token) =>
     request(`users/${encode(username)}`, { method: "DELETE", token }),
   addFavorite: (username, movieId, token) =>

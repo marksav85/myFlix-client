@@ -1,8 +1,7 @@
 {
-  "generatedAt": "2026-10-02T14:29:24Z",
+  "generatedAt": "2026-10-09T13:50:22Z",
   "rootTree": {
     "files": [
-      ".env",
       ".env.example",
       ".eslintrc.js",
       ".gitattributes",
@@ -11,7 +10,6 @@
       ".nvmrc",
       ".postcssrc.json",
       "README.md",
-      "netlify.toml",
       "package-lock.json",
       "package.json",
       "tailwind.config.js",
@@ -38,7 +36,6 @@
     ".eslintrc.js",
     ".nvmrc",
     ".postcssrc.json",
-    "netlify.toml",
     "tailwind.config.js",
     "vitest.config.mjs"
   ],
@@ -92,6 +89,12 @@
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.4",
         "vitest": "^5.0.2"
+      },
+      "allowScripts": {
+        "@parcel/watcher@2.6.0": true,
+        "@swc/core@1.16.12": true,
+        "lmdb@2.8.5": true,
+        "msgpackr-extract@3.0.4": true
       }
     },
     "summary": {
@@ -149,11 +152,11 @@
       "deployment": {},
       "dataContent": {},
       "utilities": {
+        "prop-types": "^15.8.1",
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.7",
         "jsdom": "^30.1.1",
-        "prop-types": "^15.8.1",
         "vitest": "^5.0.2"
       }
     }

@@ -1,7 +1,7 @@
 ---
 artifactId: CONTEXT_SUMMARY
-packId: "2026-10-02T14:29:24Z"
-generatedAt: "2026-10-02T14:29:24Z"
+packId: "2026-10-09T13:50:22Z"
+generatedAt: "2026-10-09T13:50:22Z"
 generator: "prompt--artifact--generate-context-summary.md"
 ---
 
@@ -9,123 +9,120 @@ generator: "prompt--artifact--generate-context-summary.md"
 
 ## Project and source scope
 
-Portfolio movie-library SPA using React 18, React Router 6, Parcel 2, and Tailwind
-CSS 3. The separate movie-api REST backend owns authentication, catalog data, and
-user accounts. This pack describes the finished refactor and Cinematic Obsidian
-redesign in the current working tree, including intentional uncommitted files.
-
-`SRC_TREE.json` covers 16 JavaScript/JSX files in 13 directories under
-`src/`, including test setup; `.test` files, CSS, HTML, and static assets are
-excluded by its generator. Empty source directories are retained. The snapshot
-includes 15 runtime JavaScript/JSX files; test setup is excluded from the snapshot.
+React 18 movie-library SPA using React Router 6, Parcel 2, and Tailwind CSS 3.
+The separate movie-api REST backend owns authentication, movies, and accounts.
+`SRC_TREE.json` covers 16 JavaScript/JSX files in 12 directories under
+`src/`, including test setup. Tests, stories, mocks, CSS, HTML, and static assets
+are excluded from the source tree; empty source directories are retained.
+One snapshot contains 15 runtime JavaScript/JSX files, excluding test setup.
 
 ## Entrypoints and routes
 
-`src/index.html` is Parcel's entry; `src/index.jsx` validates API configuration,
+`src/index.html` is Parcel's entry. `src/index.jsx` validates API configuration,
 mounts React with createRoot, imports global CSS, and wraps MainView in AppProvider.
 `src/components/main-view/main-view.jsx` owns BrowserRouter and five screen routes:
 
-- `/login`: login; authenticated users redirect to `/`.
-- `/signup`: registration; authenticated users redirect to `/`.
-- `/`: authenticated Movie Library with case-insensitive title substring search.
-- `/movies/:movieId`: authenticated detail resolved from the fetched catalog.
-- `/profile`: authenticated account information, editing, favorites, and deletion.
+- `/login`: login; signed-in users redirect to `/`.
+- `/signup`: registration; signed-in users redirect to `/`.
+- `/`: protected movie library with case-insensitive title substring search.
+- `/movies/:movieId`: protected detail resolved from the fetched movie collection.
+- `/profile`: protected account information, editing, favorites, and deletion.
 
 Unauthenticated protected routes redirect to `/login`. No catch-all route exists.
-Movie loading uses AbortController and maps backend fields to the client model:
-`id`, `title`, `description`, `genre`, `director`, and `image`. Missing genre or
-director names use an Unknown fallback. Loading, request failure, empty catalog,
-no matching titles, and missing detail records have distinct user-facing states.
+Movie loading uses AbortController and maps backend fields to `id`, `title`,
+`description`, `genre`, `director`, and `image`. Missing genre/director names use
+an Unknown fallback. Loading, error, empty, search, and missing-detail states
+have distinct feedback. Movies and search state are local to MainView.
 
-## State and API architecture
+## State, authentication, and API
 
-`src/contexts/AppContext.jsx` provides user/token state, session notices, login,
-logout, updateUser, and shared API-error handling. Storage keys are `user` and
-`token` in localStorage. Incomplete pairs, invalid JSON, and stored users without
-Username are cleared on restoration. Restoration does not verify token validity.
-Protected-request ApiError status 401/403 logs out and shows a sign-in notice.
-Logout and successful account deletion clear both keys. There is no Redux state.
+`src/contexts/AppContext.jsx` shares user/token state, session notices, login,
+logout, user updates, and API-error handling through React Context.
+User and token persist under `user` and `token` in localStorage. Incomplete pairs,
+invalid JSON, and stored users without Username are cleared during restoration.
+Restoration does not validate token expiry. Handled protected-request ApiError
+401/403 responses clear the session and prompt sign-in. Logout and successful
+account deletion also clear storage. There is no Redux store.
 
-`src/api/config.js` requires `MYFLIX_API_BASE_URL`, trims it, and removes trailing
-slashes. `.env.example` contains only public browser configuration with a local
-backend URL. Parcel consumes the variable when bundling; never put secrets in it.
-`.env` is ignored and must remain untracked. All configured values are client-visible.
+`src/api/config.js` requires `MYFLIX_API_BASE_URL`, trims whitespace, and removes
+trailing slashes. Parcel embeds this public setting during bundling. Local setup
+uses the tracked `.env.example` template and an ignored `.env`; ignored environment
+files and their contents are excluded from this pack. Changing the production
+setting requires rebuilding and redeploying, not just changing a runtime binding.
 
 `src/api/client.js` centralizes fetch, JSON bodies/responses, Bearer headers,
-encoded username/movie path segments, structured ApiError status, and empty or
-204 responses. Methods use POST `/login`, POST `/users`, GET `/movies`, PUT/DELETE
+encoded path segments, structured ApiError status, and empty/204 responses.
+Endpoints: POST `/login`, POST `/users`, GET `/movies`, PUT/DELETE
 `/users/:username`, and POST/DELETE `/users/:username/movies/:movieId`.
-Views display safe fixed failure messages rather than raw server details.
+Profile-update 422 validation errors identifying a required Password map to
+password-specific feedback. Views otherwise show fixed failure messages.
 
-## Components and shared behaviors
+## Components and account behavior
 
-`components/` separates navigation, login, signup, main/library, movie-card,
-movie-view, and profile-view. Profile composes UserInfo, UpdateUser, and
-FavoriteMovies. FavoriteMovies renders the same MovieCard as the library with
-level-three headings. MovieView displays full supported metadata and a Back to
-Movies link; no streaming, trailers, ratings, sorting, or genre filters are added.
+Components separate navigation, login, signup, library, cards, movie details,
+and profile. Profile composes UserInfo, UpdateUser, and FavoriteMovies.
+FavoriteMovies reuses MovieCard. `src/hooks/useFavorite.js` derives membership
+from user.FavoriteMovies, guards duplicate requests, toggles via POST/DELETE,
+and persists the API-returned user through Context. Pending/error state is local
+to each hook instance; membership is shared through Context.
 
-`src/hooks/useFavorite.js` derives membership from user.FavoriteMovies. Cards and
-detail views share POST/DELETE toggling, pending/request guards, safe failure
-feedback, and Context updates from the API-returned user. Successful mutations
-persist returned state; failures preserve it unless session expiry clears auth.
-Pending/error state is per hook instance; membership is shared through Context.
+Signup checks password confirmation locally and sends Username, Password, Email,
+and Birthday; account creation does not automatically sign in. Profile supports
+Birthday or legacy BirthDate and normalizes dates for inputs. Every profile save,
+including other account-detail changes, requires a password of at least five
+characters and sends Username, Email, Birthday, and Password. The UI instructs
+users to enter the current password to retain it or a different one to change it.
+Changing Username signs out. Update/delete requests guard duplicates.
+Deletion requires confirmation in the Danger Zone.
 
-Signup validates password confirmation locally and sends Username, Password,
-Email, and Birthday. It announces account creation without automatically signing
-in. Profile reads Birthday or legacy BirthDate, displays a normalized date, and
-submits Username, Email, Birthday, plus Password only when nonblank. A changed
-username requires signing in again. Update/delete operations guard duplicates.
-Favorites distinguish loading, failures, no saved IDs, and unavailable catalog IDs.
+## Design and documentation
 
-## Design and interaction system
+`README.md` documents features, setup, scripts, sessions, and deployment.
+`docs/design/DESIGN.md` retains the Cinematic Obsidian specification and required
+profile-password behavior. `src/index.css` defines semantic tokens and shared
+controls; `tailwind.config.js` maps colors, typography, spacing, and radii.
+Dark surfaces use amber primary controls and cyan focus accents. Plus Jakarta
+Sans is a font-stack declaration with system fallbacks, not a bundled font.
+Responsive layouts include library grids, detail panels, and mobile navigation.
 
-`docs/design/DESIGN.md` is the durable design specification. React implements
-Cinematic Obsidian through semantic CSS variables in `src/index.css`, Tailwind
-color mappings, typography, spacing, radii, and shared control/surface classes.
-Canvas is #0B0F17; amber primary is #F59E0B and cyan focus is #38BDF8. Danger uses
-#E11D48 at rest, #BE123C on hover/active, and #FFFFFF foreground.
-Plus Jakarta Sans is a font-stack declaration only: no bundled or remote font;
-system fallback renders when the face is unavailable locally.
+Accessibility provisions include a skip link, visible focus, labelled inputs,
+status/error feedback, reduced-motion support, and keyboard navigation.
+The deletion dialog is portaled, traps focus, makes the root inert, locks scrolling,
+and restores focus on close. Pending deletion disables controls and blocks Escape.
+`public/favicon.svg` is the runtime favicon referenced by `src/index.html`.
+`docs/design/assets/myflix-icon-source.png` is documentation-only reference art.
+Build output and caches remain ignored.
 
-The page container caps at 1440px with 16/32/48px responsive horizontal padding.
-Movie grids use 1 column below 480px, 2 from 480px, 3 from 768px, and 4 from 1024px.
-Detail stacks below 768px; account panels split from 1024px. Desktop navigation
-starts at 640px; the mobile disclosure closes on selection, route/session change,
-or Escape, restoring toggle focus on Escape.
+## Tooling and validation scope
 
-Interaction includes a skip link, visible focus rings, labels/autocomplete,
-associated error feedback, status/alert roles, aria-busy/pressed/current states,
-44px practical control targets, and reduced-motion CSS. The deletion dialog is
-portaled to document.body, initially focuses Cancel, traps focus, makes the root
-inert, locks scrolling, and restores focus/scroll state on close. Escape is blocked
-while deletion is pending; pending dialog controls are disabled.
+Node requirements are >=22.22.2 <25, npm >=10; `.nvmrc` selects Node 24.
+Scripts: `npm start` (Parcel development), `npm run build` (Parcel production),
+`npm test` (Vitest once), `npm run test:watch`, `npm run lint`, and `npm run check`
+(lint then tests). Current declarations, including allowScripts, are embedded
+in `PROJECT_OVERVIEW.json`; exact dependency resolutions reside in package-lock.json.
+Vitest uses jsdom, React Testing Library, user-event, and jest-dom with mocked fetch.
+Test setup resets storage, history, and mocks. Coverage includes auth/routes,
+API interactions, favorites, profile actions, and keyboard/ARIA behavior.
+No browser E2E or visual-regression suite is documented. This generation verifies
+artifact consistency; it does not rerun application tests, builds, or security scans
+and makes no current pass-count or security-advisory claims.
 
-`public/favicon.svg` is the canonical runtime asset, referenced as
-`../public/favicon.svg` from src/index.html. Parcel emits a hashed SVG and rewrites
-the HTML link. `docs/design/assets/myflix-icon-source.png` is documentation-only.
-The old source PNG and tracked dist PNG are intentional pending deletions.
-Generated dist/cache files remain ignored; no replacement dist artifact is intended
-for tracking. Discarded Stitch exploration material is not part of durable docs.
+## Cloudflare Workers deployment
 
-## Tooling, validation, and deployment boundary
+The README records Worker `myflix-react`, repository `marksav85/myFlix-client`,
+and production branch `refactor/portfolio-update`. Cloudflare manages deployment
+configuration externally; no Wrangler configuration is tracked.
+Build command: `npm run build`; deploy command: `npx wrangler deploy`.
+Root directory: `/`; static output: `dist/`; build Node: `24.21.0`;
+Worker compatibility date: `2026-10-06`. The build environment supplies
+`MYFLIX_API_BASE_URL` before Parcel generates browser assets.
 
-Node >=22.22.2 <25 and npm >=10 are supported; `.nvmrc` prefers Node 24.
-Scripts: npm start (Parcel), npm test (Vitest run), npm run lint (ESLint on JS/JSX),
-npm run build (Parcel production), and npm run check (lint then tests).
-Vitest uses jsdom, React Testing Library, user-event, jest-dom, mocked fetch, and
-`src/test/setup.js` cleanup with a synthetic API URL. Eight test files cover
-registration/login, protected routes/session expiry, movie/search states,
-favorites, profile updates/deletion, and keyboard/ARIA behavior. There is no
-browser E2E or automated visual-regression suite.
+React: https://react.myflix.marksavilledesigns.com
+Workers: https://myflix-react.marksav85.workers.dev
+API: https://api.myflix.marksavilledesigns.com
+Related Angular client: https://angular.myflix.marksavilledesigns.com
 
-The maintainer reports final lint, 42 tests, build, npm ls, favicon/hygiene checks,
-and human browser acceptance passed. This documentation pass does not rerun
-application validation. Accepted React Router v6 moderate advisories remain;
-remediation requires the deliberately deferred Router v7 migration. Dependencies
-are unchanged in this working-tree pass; the prior modernization is committed.
-
-Parcel builds a static SPA into dist/. Set the public API URL before building;
-the host must provide browser-route fallback and backend CORS must allow the
-frontend. netlify.toml contains a catch-all rewrite to `/`. Hosting/backend
-configuration is separate; no Contabo migration is represented as deployed.
+The API runs on Contabo using Docker and Caddy, connected to MongoDB Atlas.
+Backend CORS must allow the frontend origin. React Router deep links require
+index.html fallback for unmatched page-navigation requests; the exact production
+fallback setting remains unverified. No production infrastructure was accessed.

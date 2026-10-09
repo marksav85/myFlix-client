@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-02T14:29:24Z",
+  "generatedAt": "2026-10-09T13:50:22Z",
   "root": "src",
   "summary": {
     "totalFiles": 16,
-    "totalDirectories": 13
+    "totalDirectories": 12
   },
   "tree": [
     {
@@ -16,7 +16,7 @@
           "name": "client.js",
           "relativePath": "src/api/client.js",
           "extension": ".js",
-          "sizeKB": 2.1,
+          "sizeKB": 2.4,
           "isComponent": false,
           "imports": [
             "src/api/config.js"
@@ -155,7 +155,7 @@
               "name": "profile-view.jsx",
               "relativePath": "src/components/profile-view/profile-view.jsx",
               "extension": ".jsx",
-              "sizeKB": 8.3,
+              "sizeKB": 8.9,
               "isComponent": true,
               "imports": [
                 "src/components/profile-view/user-info.jsx",
@@ -170,7 +170,7 @@
               "name": "update-user.jsx",
               "relativePath": "src/components/profile-view/update-user.jsx",
               "extension": ".jsx",
-              "sizeKB": 2.9,
+              "sizeKB": 3.7,
               "isComponent": true,
               "imports": []
             },
@@ -241,12 +241,6 @@
           ]
         }
       ]
-    },
-    {
-      "type": "directory",
-      "name": "img",
-      "relativePath": "src/img",
-      "children": []
     },
     {
       "type": "directory",

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T14:29:24Z",
+  "generatedAt": "2026-10-09T13:50:22Z",
   "root": "docs",
   "summary": {
     "totalFiles": 7,
@@ -26,7 +26,7 @@
               "name": "ARTIFACT_PACK_MANIFEST.json",
               "relativePath": "docs/0-ai/artifacts/ARTIFACT_PACK_MANIFEST.json",
               "extension": ".json",
-              "sizeKB": 5.0,
+              "sizeKB": 4.4,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
@@ -38,7 +38,7 @@
               "name": "CONTEXT_SUMMARY.md",
               "relativePath": "docs/0-ai/artifacts/CONTEXT_SUMMARY.md",
               "extension": ".md",
-              "sizeKB": 7.5,
+              "sizeKB": 7.1,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
@@ -64,7 +64,7 @@
               "name": "PROJECT_OVERVIEW.json",
               "relativePath": "docs/0-ai/artifacts/PROJECT_OVERVIEW.json",
               "extension": ".json",
-              "sizeKB": 3.8,
+              "sizeKB": 4.0,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
@@ -77,7 +77,7 @@
               "name": "SRC_SNAPSHOT_1.tsx",
               "relativePath": "docs/0-ai/artifacts/SRC_SNAPSHOT_1.tsx",
               "extension": ".tsx",
-              "sizeKB": 43.2,
+              "sizeKB": 44.9,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
@@ -89,7 +89,7 @@
               "name": "SRC_TREE.json",
               "relativePath": "docs/0-ai/artifacts/SRC_TREE.json",
               "extension": ".json",
-              "sizeKB": 7.8,
+              "sizeKB": 7.7,
               "tier": "core",
               "riskIfMissing": "medium",
               "tags": [
@@ -117,7 +117,7 @@
           "name": "DESIGN.md",
           "relativePath": "docs/design/DESIGN.md",
           "extension": ".md",
-          "sizeKB": 18.5,
+          "sizeKB": 18.7,
           "tier": "reference",
           "riskIfMissing": "medium",
           "tags": [
