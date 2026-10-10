@@ -208,7 +208,7 @@ describe("Phase 2 regression behavior", () => {
     await user.type(screen.getByLabelText("Password:"), "correct-horse");
     await user.type(screen.getByLabelText("Confirm Password:"), "correct-horse");
     await user.type(screen.getByLabelText("Email:"), "ada@example.com");
-    await user.type(screen.getByLabelText("Birthday:"), "1990-01-01");
+    await user.type(screen.getByLabelText("Birthday (optional):"), "1990-01-01");
     await user.click(screen.getByRole("button", { name: "Signup" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
