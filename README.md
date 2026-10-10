@@ -14,7 +14,8 @@ Contabo using Docker and Caddy and connected to MongoDB Atlas.
 
 ## Features
 
-- Register with username, password confirmation, email, and birthday; log in and out.
+- Register with username, password confirmation, email, and optional birthday;
+  log in and out.
 - Browse a poster-led movie library and search titles without case sensitivity.
 - View movie descriptions, genres, directors, and posters.
 - Add and remove favorites from the library, detail view, and profile.
@@ -23,6 +24,20 @@ Contabo using Docker and Caddy and connected to MongoDB Atlas.
 - Delete an account through a confirmation dialog in the Danger Zone.
 - Use responsive navigation and layouts with keyboard focus, accessible feedback,
   loading/empty/error states, and reduced-motion support.
+
+## Registration requirements
+
+- Username: at least 5 ASCII alphanumeric characters (`A-Z`, `a-z`, `0-9`);
+  no spaces or symbols.
+- Password: at least 8 characters and at most 72 UTF-8 bytes; no character-complexity
+  requirements. Password confirmation must match.
+- Email: required, with a valid email format.
+- Birthday: optional, a valid `YYYY-MM-DD` date that is not in the future;
+  no minimum age restriction. Blank birthdays are omitted from registration requests.
+
+All fields except birthday are required. Client-side checks and backend validation
+errors, including duplicate usernames, are displayed beside the relevant fields.
+Registration validation has been verified in production.
 
 ## Stack and structure
 
@@ -100,8 +115,9 @@ remains responsible for authentication and authorization.
 
 ## Cloudflare Workers deployment
 
-Cloudflare manages the deployment configuration for Worker **`myflix-react`**;
-no Wrangler configuration is tracked in this repository.
+[wrangler.jsonc](wrangler.jsonc) defines Worker **`myflix-react`**, its compatibility
+date, static assets directory, and SPA fallback. Cloudflare builds and deploys
+automatically from `main` using the configuration below.
 
 | Setting | Configuration |
 | --- | --- |
@@ -111,6 +127,8 @@ no Wrangler configuration is tracked in this repository.
 | Build command | `npm run build` |
 | Deploy command | `npx wrangler deploy` |
 | Static asset output | `dist/` |
+| Wrangler assets directory | `./dist` |
+| Assets not-found handling | `single-page-application` |
 | Build Node.js version | `24.21.0` |
 | Build environment variable | `MYFLIX_API_BASE_URL` |
 | Worker compatibility date | `2026-10-06` |
@@ -121,5 +139,7 @@ publishes these assets to Workers, serving the custom domain and Workers URL abo
 
 React Router uses browser paths, so direct visits and refreshes on routes such as
 `/profile` and `/movies/:movieId` require the host to serve `index.html` for
-unmatched page-navigation requests. SPA fallback must be configured in Cloudflare;
-the exact fallback configuration is not documented here.
+unmatched page-navigation requests. Wrangler's `single-page-application` fallback
+provides this behavior so React Router can resolve the requested route. The
+configuration has been deployed, and browser refreshes on application routes have
+been verified to work.
