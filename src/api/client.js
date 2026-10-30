@@ -1,35 +1,57 @@
-import { getApiBaseUrl } from "./config";
+import { getApiBaseUrl } from './config';
 
 export class ApiError extends Error {
   constructor(message, status, errors = []) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.status = status;
     this.errors = errors;
   }
 }
 
-const buildUrl = (path) => `${getApiBaseUrl()}/${path.replace(/^\/+/, "")}`;
+const buildUrl = (path) => `${getApiBaseUrl()}/${path.replace(/^\/+/, '')}`;
 
-const getErrorMessage = async (response, profileUpdate) => {
+const getErrorDetails = async (response, profileUpdate) => {
   try {
     const data = await response.json();
-    if (profileUpdate && response.status === 422 && Array.isArray(data.errors) &&
-      data.errors.some((error) => error.path === "Password" && error.msg === "Password is required")) {
-      return "Password is required";
+    const errors =
+      profileUpdate && Array.isArray(data.errors)
+        ? data.errors.map(({ path, param, msg }) => ({
+            path: path || param,
+            msg: typeof msg === 'string' ? msg : 'Invalid field.',
+          }))
+        : [];
+    if (
+      profileUpdate &&
+      response.status === 422 &&
+      Array.isArray(data.errors) &&
+      data.errors.some((error) => error.path === 'Password' && error.msg === 'Password is required')
+    ) {
+      return { message: 'Password is required', errors };
     }
-    return data.message || data.error || "The request could not be completed.";
+    return {
+      message: data.message || data.error || 'The request could not be completed.',
+      errors,
+    };
   } catch {
-    return "The request could not be completed.";
+    return { message: 'The request could not be completed.', errors: [] };
   }
 };
 
+// Centralize response parsing and safe API errors for all views.
 export const request = async (path, options = {}) => {
-  const { token, body, headers, profileUpdate = false, registration = false, ...fetchOptions } = options;
+  const {
+    token,
+    body,
+    headers,
+    profileUpdate = false,
+    registration = false,
+    ...fetchOptions
+  } = options;
   const response = await fetch(buildUrl(path), {
     ...fetchOptions,
     headers: {
-      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
@@ -41,24 +63,36 @@ export const request = async (path, options = {}) => {
       // Read once: registration may return JSON validation errors or plain text.
       const text = await response.text();
       let data;
-      try { data = JSON.parse(text); } catch { data = null; }
-      const errors = Array.isArray(data?.errors) ? data.errors.map(({ path, param, msg }) => ({
-        path: path || param,
-        msg: typeof msg === "string" ? msg : "Invalid field.",
-      })) : [];
-      throw new ApiError(data?.message || data?.error ||
-        (data ? "Registration unsuccessful. Please try again." : text.trim()) ||
-        "Registration unsuccessful. Please try again.", response.status, errors);
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+      const errors = Array.isArray(data?.errors)
+        ? data.errors.map(({ path, param, msg }) => ({
+            path: path || param,
+            msg: typeof msg === 'string' ? msg : 'Invalid field.',
+          }))
+        : [];
+      throw new ApiError(
+        data?.message ||
+          data?.error ||
+          (data ? 'Registration unsuccessful. Please try again.' : text.trim()) ||
+          'Registration unsuccessful. Please try again.',
+        response.status,
+        errors,
+      );
     }
-    throw new ApiError(await getErrorMessage(response, profileUpdate), response.status);
+    const { message, errors } = await getErrorDetails(response, profileUpdate);
+    throw new ApiError(message, response.status, errors);
   }
 
   if (response.status === 204) {
     return undefined;
   }
 
-  const contentLength = response.headers?.get?.("content-length");
-  if (contentLength === "0") {
+  const contentLength = response.headers?.get?.('content-length');
+  if (contentLength === '0') {
     return undefined;
   }
 
@@ -72,21 +106,26 @@ export const request = async (path, options = {}) => {
 const encode = encodeURIComponent;
 
 export const api = {
-  login: (credentials) => request("login", { method: "POST", body: credentials }),
-  signup: (user) => request("users", { method: "POST", body: user, registration: true }),
-  getMovies: (token, signal) => request("movies", { token, signal }),
+  login: (credentials) => request('login', { method: 'POST', body: credentials }),
+  signup: (user) => request('users', { method: 'POST', body: user, registration: true }),
+  getMovies: (token, signal) => request('movies', { token, signal }),
   updateUser: (username, updates, token) =>
-    request(`users/${encode(username)}`, { method: "PUT", body: updates, token, profileUpdate: true }),
+    request(`users/${encode(username)}`, {
+      method: 'PUT',
+      body: updates,
+      token,
+      profileUpdate: true,
+    }),
   deleteUser: (username, token) =>
-    request(`users/${encode(username)}`, { method: "DELETE", token }),
+    request(`users/${encode(username)}`, { method: 'DELETE', token }),
   addFavorite: (username, movieId, token) =>
     request(`users/${encode(username)}/movies/${encode(movieId)}`, {
-      method: "POST",
+      method: 'POST',
       token,
     }),
   removeFavorite: (username, movieId, token) =>
     request(`users/${encode(username)}/movies/${encode(movieId)}`, {
-      method: "DELETE",
+      method: 'DELETE',
       token,
     }),
 };

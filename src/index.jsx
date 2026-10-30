@@ -1,14 +1,13 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import MainView from "./components/main-view/main-view";
-import "./index.css";
-import { AppProvider } from "./contexts/AppContext";
-import { getApiBaseUrl } from "./api/config";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import MainView from './components/main-view/main-view';
+import './index.css';
+import { AppProvider } from './contexts/AppContext';
+import { getApiBaseUrl } from './api/config';
 
 // Surface a missing public API configuration as soon as the application starts.
 getApiBaseUrl();
 
-// Main component (will eventually use all the others)
 const MyFlixApplication = () => {
   return (
     <AppProvider>
@@ -19,9 +18,7 @@ const MyFlixApplication = () => {
   );
 };
 
-// Finds the root of your app
-const container = document.querySelector("#root");
+const container = document.querySelector('#root');
 const root = createRoot(container);
 
-// Tells React to render your app in the root DOM element
 root.render(<MyFlixApplication />);

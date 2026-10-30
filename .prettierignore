@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.cache/
+.parcel-cache/
+coverage/
+docs/
+public/
+package-lock.json

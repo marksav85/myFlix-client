@@ -3,9 +3,9 @@ export const getApiBaseUrl = () => {
 
   if (!baseUrl) {
     throw new Error(
-      "MYFLIX_API_BASE_URL is required. Set it in your environment before starting the app."
+      'MYFLIX_API_BASE_URL is required. Set it in your environment before starting the app.',
     );
   }
 
-  return baseUrl.replace(/\/+$/, "");
+  return baseUrl.replace(/\/+$/, '');
 };
